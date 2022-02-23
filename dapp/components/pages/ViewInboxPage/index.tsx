@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query'
 import Link from 'next/link'
-import { ANNONCE_SUBGRAPH_URL } from '../../config'
+import { ANNONCE_SUBGRAPH_URL } from '../../../config'
 
 async function getInbox(profileId: string) {
     // Fetch the follows for this user.
@@ -80,7 +80,7 @@ async function getInbox(profileId: string) {
         body: JSON.stringify({
             query: `
                 {
-                    feedPubs(filter: { author: { in: [${followingProfileIds}] } }, orderBy: createdAt, orderDirection: desc) {
+                    feedPubs(filter: { author_in: [${followingProfileIds}] }, orderBy: createdAt, orderDirection: desc) {
                         id,
                         feed {
                             name,
@@ -119,6 +119,8 @@ async function getInbox(profileId: string) {
 const ProfileHandleInlineLink = ({ profile }: any) => {
     return <Link href={`/profiles/${profile.handle}`}>{profile.handle}</Link>
 }
+
+
 
 // const ProfileHandleInlineLink = ({ profile }: any) => {
 //     return <Link href={`/profiles/${profile.handle}`}>{profile.handle}</Link>

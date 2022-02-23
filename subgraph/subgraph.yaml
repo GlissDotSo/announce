@@ -8,9 +8,9 @@ dataSources:
     name: LensHub
     network: localhost
     source:
-      address: '0x4cC8D5649e9d91a4bD054667691aebeC69B69FfB'
+      address: '0x133EA40EA9975d53D34417F9164a54A635110AE9'
       abi: LensHub
-      startBlock: 1315
+      startBlock: 1399
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -50,9 +50,9 @@ dataSources:
     name: Feed
     network: localhost
     source:
-      address: '0xE45fF4A0A8D0E9734C73874c034E03594E15ba28'
+      address: '0xcf33a1c13D1599399B3581c3f3cf39e943013A73'
       abi: Feed
-      startBlock: 1320
+      startBlock: 1404
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -68,8 +68,10 @@ dataSources:
       eventHandlers:
         - event: 'FeedCreated(indexed uint256,indexed uint256,indexed address)'
           handler: handleFeedCreated
-        - event: 'PostToFeedCreated(indexed uint256,indexed uint256,indexed uint256,uint256)'
+        - event: 'PostToFeedCreated(indexed uint256,indexed uint256,indexed uint256,uint256,uint256)'
           handler: handlePostToFeedCreated
+        - event: 'FeedProfilePermissionsSet(indexed uint256,indexed uint256,bool)'
+          handler: handleFeedProfilePermissionsSet
       file: ./src/mappings.ts
 templates:
   - kind: ethereum/contract

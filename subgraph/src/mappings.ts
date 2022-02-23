@@ -13,15 +13,16 @@ import {
     FollowModuleSet,
     CommentCreated,
     MirrorCreated,
-    PostToFeedCreated,
     FollowNFTDeployed,
     Followed
 } from "../generated/templates/LensHub/LensHub"
-import { FeedCreated, Feed as FeedContract } from '../generated/Feed/Feed'
-import { Comment, InboxItem, Post, FollowingEdge, Profile, SocialGraph, FollowNFT, FollowNFTContract as FollowNFTContractEntity, ProfileCreatorWhitelist, CollectModuleWhitelist, FollowModuleWhitelist, ReferenceModuleWhitelist, Mirror, User, Inbox, Feed, FeedPub } from "../generated/schema"
+import { FeedCreated, PostToFeedCreated, FeedProfilePermissionsSet, Feed as FeedContract } from '../generated/Feed/Feed'
+import { Comment, FeedAuthor, Post, FollowingEdge, Profile, SocialGraph, FollowNFT, FollowNFTContract as FollowNFTContractEntity, ProfileCreatorWhitelist, CollectModuleWhitelist, FollowModuleWhitelist, ReferenceModuleWhitelist, Mirror, User, Inbox, Feed, FeedPub } from "../generated/schema"
 import { FollowNFT as FollowNFTContract } from '../generated/templates'
-
+import { store } from '@graphprotocol/graph-ts'
 import { ipfs } from '@graphprotocol/graph-ts'
+
+const ONE = BigInt.fromI32(1);
 
 export function handleProfileCreated(event: ProfileCreated): void {
     let lensContract = LensHub.bind(event.address);
@@ -42,6 +43,8 @@ export function handleProfileCreated(event: ProfileCreated): void {
     entity.followNFTURI = profileData.followNFTURI.toString();
     entity.followModuleReturnData = event.params.followModuleReturnData;
     entity.dispatcher = new Bytes(0x0000000000000000000000000000000000000000);
+    entity.followersCount = 0;
+    entity.followingCount = 0;
     entity.save();
 
     // Create a User for this profile.
@@ -135,10 +138,6 @@ export function handleFollowed(event: Followed): void {
     // Update the following array.
     for (let i = 0; i < fromProfileIds.length; i++) {
         const fromProfileId = fromProfileIds[i];
-        // const user = User.load(fromProfile.toString());
-        // if (user == null) {
-        //     throw new Error("User not found");
-        // }
         
         for (let j = 0; j < toProfileIds.length; j++) {
             const toProfileId = toProfileIds[j];
@@ -151,13 +150,28 @@ export function handleFollowed(event: Followed): void {
 
             // TODO: Verify if Lens processes follows only once.
             if (edge == null) {
-                verifyProfileExists(fromProfileId.toString());
-                verifyProfileExists(toProfileId.toString());
 
                 edge = new FollowingEdge(edgeId);
                 edge.from = fromProfileId.toString();
                 edge.to = toProfileId.toString();
                 edge.save();
+
+                // TODO: decrement somewhere.
+                // TODO: proper null checks
+                const fromProfile = Profile.load(fromProfileId.toString());
+                if (fromProfile != null) {
+                    fromProfile.followingCount = fromProfile.followingCount + 1;
+                    fromProfile.save();
+                }
+
+                const toProfile = Profile.load(toProfileId.toString());
+                if (toProfile != null) {
+                    toProfile.followersCount = toProfile.followersCount + 1;
+                    toProfile.save();
+                }
+
+                verifyProfileExists(fromProfileId.toString());
+                verifyProfileExists(toProfileId.toString());
             }
         }
     }
@@ -198,11 +212,19 @@ export function handlePostCreated(event: PostCreated): void {
         entity.timestamp = event.params.timestamp;
 
         entity.save();
+
+        // Profile
+        const profile = Profile.load(event.params.profileId.toString());
+        if(!profile) {
+        } else {
+            profile.pubCount = profile.pubCount.plus(ONE);
+            profile.save();
+        }
     }
 };
 
 export function handleFeedCreated(event: FeedCreated): void {
-    let feed = new Feed(event.params.profileId.toString())
+    let feed = new Feed(event.params.feedId.toString())
     feed.profile = event.params.profileId.toString();
     feed.owner = event.params.owner;
     feed.feedId = event.params.feedId;
@@ -215,6 +237,32 @@ export function handleFeedCreated(event: FeedCreated): void {
     feed.save();
 }
 
+export function handleFeedProfilePermissionsSet(event: FeedProfilePermissionsSet): void {
+    let feed = new Feed(event.params.feedId.toString());
+
+    const profileId = event.params.profileId;
+    const feedAuthorId = ""
+        .concat(feed.feedId.toString())
+        .concat("_")
+        .concat(profileId.toString());
+    
+    if(event.params.createPost == true) {
+        const feedAuthor = new FeedAuthor(feedAuthorId);
+        feedAuthor.profile = profileId.toString();
+        feedAuthor.feed = feed.id.toString();
+        feedAuthor.save();
+    } else {
+        // TODO: this might catch an error which we don't want to, and invalidate the whole store.
+        if (store.get('FeedAuthor', feedAuthorId)) {
+            store.remove('FeedAuthor', feedAuthorId);
+        }
+
+        // AS100: Not implemented: Exceptions
+        // try {    
+        // } catch(ex) {}
+    }
+}
+
 function getPostId(authorId: BigInt, pubId: BigInt): string {
     return ""
         .concat(authorId.toString())
@@ -223,7 +271,7 @@ function getPostId(authorId: BigInt, pubId: BigInt): string {
 }
 
 export function handlePostToFeedCreated(event: PostToFeedCreated): void {
-    let feed = Feed.load(event.params.profileId.toString());
+    let feed = Feed.load(event.params.feedId.toString());
     if (!feed) throw new Error("No feed found for profile")
     
     const feedPub = new FeedPub(

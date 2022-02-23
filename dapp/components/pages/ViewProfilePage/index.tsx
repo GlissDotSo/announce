@@ -4,7 +4,6 @@ import { useQuery } from "react-query"
 import { ANNONCE_SUBGRAPH_URL } from "../../../config"
 import { ProfileHandleInlineLink } from "../../utils"
 
-
 async function getProfiles(ids: string[]) {
     const res2 = await fetch(`${ANNONCE_SUBGRAPH_URL}`, {
         method: 'POST',
@@ -16,7 +15,7 @@ async function getProfiles(ids: string[]) {
         body: JSON.stringify({
             query: `
                 {
-                    profiles( filter: { profileId: { in: [${ids}] } } ) {
+                    profiles( where: { profileId_in: ${JSON.stringify(ids)} } ) {
                         handle,
                         profileId
                     }
@@ -75,13 +74,13 @@ async function getProfile(handle: string) {
     let followersProfiles = []
 
     if (following.length > 0) {
-        const followingProfileIds = following.map((edge: any) => edge.to.id).join(',')
+        const followingProfileIds = following.map((edge: any) => edge.to.id)
         followingProfiles = await getProfiles(followingProfileIds) 
     }
     // FIXME: in the subgraph
     // Error: `edge.to` is undefined.
     if(followers.length) {
-        const followersProfileIds = followers.map((edge: any) => edge.from.id).join(',')
+        const followersProfileIds = followers.map((edge: any) => edge.from.id)
         followersProfiles = await getProfiles(followersProfileIds) 
     }
 

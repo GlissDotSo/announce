@@ -6,6 +6,8 @@ import { ProfileHandleInlineLink } from "../../utils"
 
 
 async function getProfiles(ids: string[]) {
+    console.log()
+
     const res2 = await fetch(`${ANNONCE_SUBGRAPH_URL}`, {
         method: 'POST',
         headers: {
@@ -16,7 +18,7 @@ async function getProfiles(ids: string[]) {
         body: JSON.stringify({
             query: `
                 {
-                    profiles( filter: { profileId: { in: [${ids}] } } ) {
+                    profiles(where: { profileId_in: ${JSON.stringify(ids)} } ) {
                         handle,
                         profileId
                     }
@@ -46,10 +48,18 @@ async function getFeed(id: string) {
                     feeds(where: { feedId: "${id}" }) {
                         name,
                         owner,
+                        authors {
+                            profile {
+                                profileId,
+                                handle
+                            }
+                        },
                         profile {
                             handle,
                             profileId,
-                            
+                            pubCount,
+                            followersCount,
+                            followingCount,
                             followers {
                                 from {
                                     id
@@ -79,7 +89,7 @@ async function getFeed(id: string) {
     //     followingProfiles = await getProfiles(followingProfileIds)
     // }
     if (followers.length) {
-        const followersProfileIds = followers.map((edge: any) => edge.from.id).join(',')
+        const followersProfileIds = followers.map((edge: any) => edge.from.id)
         followersProfiles = await getProfiles(followersProfileIds)
     }
 
@@ -106,14 +116,19 @@ const ViewFeed = ({ id }) => {
                     {'\n'}
                     {'\n'}
                     <b>{data.feed.name}</b> {'@'}<ProfileHandleInlineLink profile={data.feed.profile} />{'\n'}
+                    owner: {data.feed.owner}{'\n'}
+                    authors:{'\n'}
+                    {' -> '}{data.feed.authors.map((author: any) => <ProfileHandleInlineLink profile={author.profile} />).map(x => <>{x}{`, `}</>)}{'\n'}
+
                     {'\n'}
+                    <b>{data.feed.profile.pubCount} posts</b>{'\n'}
 
                     {/* <b>{data.following.length} following</b>{'\n'}
                     {data.following.map(profile => <ProfileHandleInlineLink profile={profile} />).map(x => <>{x}{`\n`}</>)} */}
 
                     {'\n'}
                     <b>{data.followers.length} followers</b>{'\n'}
-                    {data.followers.map(profile => <ProfileHandleInlineLink profile={profile} />).map(x => <>{x}{`\n`}</>)}
+                    {data.followers.map((profile: any) => <ProfileHandleInlineLink profile={profile} />).map(x => <>{x}{`\n`}</>)}
                 </pre>
             </>
         }

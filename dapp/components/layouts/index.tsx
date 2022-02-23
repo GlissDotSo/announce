@@ -38,16 +38,16 @@ const BaseLayout = ({ children }: { children: any }) => {
                     </Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Link href="/profiles">
-                        <Nav.Link active={router.pathname.startsWith('/profiles')} href='/profiles'>
-                        Profiles
-                    </Nav.Link>
-                    </Link>
-                </Nav.Item>
-                <Nav.Item>
                     <Link href="/feeds">
                         <Nav.Link active={router.pathname.startsWith('/feeds')} href='/feeds'>
                             Feeds
+                        </Nav.Link>
+                    </Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Link href="/profiles">
+                        <Nav.Link active={router.pathname.startsWith('/profiles')} href='/profiles'>
+                            Profiles
                         </Nav.Link>
                     </Link>
                 </Nav.Item>

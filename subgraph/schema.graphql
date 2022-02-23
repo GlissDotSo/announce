@@ -24,10 +24,16 @@ type Feed @entity {
   id: ID!
   profile: Profile!
   feedId: BigInt!
-  # authors: 
+  authors: [FeedAuthor!]! @derivedFrom(field: "feed")
   owner: Bytes! # address
   name: String
   feedPubs: [FeedPub!]! @derivedFrom(field: "feed")
+}
+
+type FeedAuthor @entity {
+  id: ID!
+  feed: Feed!
+  profile: Profile!
 }
 
 type User @entity {
@@ -80,6 +86,8 @@ type Profile @entity {
 
   user: User! @derivedFrom(field: "profile")
 
+  followingCount: Int!
+  followersCount: Int!
   following: [FollowingEdge!]! @derivedFrom(field: "from")
   followers: [FollowingEdge!]! @derivedFrom(field: "to")
 }
