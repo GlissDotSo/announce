@@ -35,11 +35,18 @@ const connectors = ({ chainId }: { chainId?: number | undefined }) => {
     ]
 }
 
+
+import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
+
+const queryClient = new QueryClient()
+
 export const Providers = ({ children }: {
     children: React.ReactNode;
 }): JSX.Element => <>
-    <WagmiProvider autoConnect connectors={connectors} >
-        {children}
-    </WagmiProvider>
+    <QueryClientProvider client={queryClient}>
+        <WagmiProvider autoConnect connectors={connectors} >
+            {children}
+        </WagmiProvider>
+    </QueryClientProvider>
 </>
 

@@ -17,44 +17,41 @@ import {
     FollowNFTDeployed,
     Followed
 } from "../generated/templates/LensHub/LensHub"
-import { FeedCreated } from '../generated/Feed/Feed'
+import { FeedCreated, Feed as FeedContract } from '../generated/Feed/Feed'
 import { Comment, InboxItem, Post, FollowingEdge, Profile, SocialGraph, FollowNFT, FollowNFTContract as FollowNFTContractEntity, ProfileCreatorWhitelist, CollectModuleWhitelist, FollowModuleWhitelist, ReferenceModuleWhitelist, Mirror, User, Inbox, Feed, FeedPub } from "../generated/schema"
 import { FollowNFT as FollowNFTContract } from '../generated/templates'
 
 export function handleProfileCreated(event: ProfileCreated): void {
     let lensContract = LensHub.bind(event.address);
-    let entity = Profile.load(event.params.profileId.toString());
 
-    if (!entity) {
-        entity = new Profile(event.params.profileId.toString());
-        let profileData = lensContract.getProfile(event.params.profileId);
+    // Create a Profile.
+    let entity = new Profile(event.params.profileId.toString());
+    let profileData = lensContract.getProfile(event.params.profileId);
 
-        entity.profileId = event.params.profileId;
-        entity.creator = event.params.creator;
-        entity.owner = event.params.to;
-        entity.pubCount = profileData.pubCount;
-        entity.followModule = profileData.followModule;
-        // entity.followNFT = profileData.followNFT;
-        entity.handle = profileData.handle.toString();
-        entity.imageURI = profileData.imageURI.toString();
-        entity.createdOn = event.params.timestamp;
-        entity.followNFTURI = profileData.followNFTURI.toString();
-        entity.followModuleReturnData = event.params.followModuleReturnData;
-        entity.dispatcher = new Bytes(0x0000000000000000000000000000000000000000);
-        entity.save();
-    }
+    entity.profileId = event.params.profileId;
+    entity.creator = event.params.creator;
+    entity.owner = event.params.to;
+    entity.pubCount = profileData.pubCount;
+    entity.followModule = profileData.followModule;
+    // entity.followNFT = profileData.followNFT;
+    entity.handle = profileData.handle.toString();
+    entity.imageURI = profileData.imageURI.toString();
+    entity.createdOn = event.params.timestamp;
+    entity.followNFTURI = profileData.followNFTURI.toString();
+    entity.followModuleReturnData = event.params.followModuleReturnData;
+    entity.dispatcher = new Bytes(0x0000000000000000000000000000000000000000);
+    entity.save();
 
-    // Create a user for this profile.
-    let user = User.load(event.params.profileId.toString());
+    // Create a User for this profile.
+    let user = new User(event.params.profileId.toString());
 
-    if(!user) {
-        user = new User(event.params.profileId.toString());
-        let inbox = new Inbox(event.params.profileId.toString());
-        inbox.save();
-        user.inbox = inbox.id;
-        user.profile = entity.id;
-        user.save();
-    }
+    let inbox = new Inbox(event.params.profileId.toString());
+    inbox.user = user.id;
+    inbox.save();
+
+    user.inbox = inbox.id;
+    user.profile = entity.id;
+    user.save();
 };
 
 export function handleCommentCreated(event: CommentCreated): void {
@@ -103,10 +100,10 @@ export function handleFollowNFTDeployed(event: FollowNFTDeployed): void {
     let followNFTAddress = event.params.followNFT;
     let timestamp = event.params.timestamp;
 
-    let followNFT = FollowNFTContractEntity.load(followNFTAddress.toString());
+    let followNFT = FollowNFTContractEntity.load(followNFTAddress.toHexString());
 
     if(!followNFT) {
-        followNFT = new FollowNFTContractEntity(followNFTAddress.toString());
+        followNFT = new FollowNFTContractEntity(followNFTAddress.toHexString());
         let profile = Profile.load(profileId.toString());
         if (!profile) {
             throw new Error("Profile not found")
@@ -125,17 +122,10 @@ import { log } from '@graphprotocol/graph-ts'
 
 export function handleFollowed(event: Followed): void {
     // We don't care about follows from Ethereum accounts. Only profiles.
-    // if (event.params.followedFromProfileIds.length == 0) {
-    //     console.log('Ignoring Followed since it contains no profile metadata');
-    //     return;
-    // }
-    log.debug(
-        "{} {}",
-        [
-            event.params.profileIds.join(',').toString(),
-            event.params.followedFromProfileIds.join(',').toString()
-        ]
-    );
+    if (event.params.followedFromProfileIds.length == 0) {
+        log.info('Ignoring Followed event since it contains no profile metadata', []);
+        return;
+    }
 
     const fromProfileIds = event.params.followedFromProfileIds;
     const toProfileIds = event.params.profileIds;
@@ -145,7 +135,6 @@ export function handleFollowed(event: Followed): void {
         const fromProfileId = fromProfileIds[i];
         // const user = User.load(fromProfile.toString());
         // if (user == null) {
-        //     console.log("User not found");
         //     throw new Error("User not found");
         // }
         
@@ -157,8 +146,12 @@ export function handleFollowed(event: Followed): void {
                 .concat(toProfileId.toString());
             
             let edge = FollowingEdge.load(edgeId);
-            
+
+            // TODO: Verify if Lens processes follows only once.
             if (edge == null) {
+                verifyProfileExists(fromProfileId.toString());
+                verifyProfileExists(toProfileId.toString());
+
                 edge = new FollowingEdge(edgeId);
                 edge.from = fromProfileId.toString();
                 edge.to = toProfileId.toString();
@@ -166,8 +159,13 @@ export function handleFollowed(event: Followed): void {
             }
         }
     }
-
 };
+
+function verifyProfileExists(id: string): void {
+    if(Profile.load(id) == null) {
+        throw new Error("Profile doesn't exist");
+    }
+}
 
 export function handlePostCreated(event: PostCreated): void {
 
@@ -192,21 +190,22 @@ export function handlePostCreated(event: PostCreated): void {
 };
 
 export function handleFeedCreated(event: FeedCreated): void {
-    let feed = new Feed(event.params.feedId.toString())
-    feed.name = "";
+    let feed = new Feed(event.params.profileId.toString())
     feed.profile = event.params.profileId.toString();
     feed.owner = event.params.owner;
+    feed.feedId = event.params.feedId;
+
+    const feedContract = FeedContract.bind(event.address);
+    const data = feedContract.getFeedData(feed.feedId);
+    feed.name = data.value0;
+    feed.owner = data.value1;
+
     feed.save();
 }
 
 export function handlePostToFeedCreated(event: PostToFeedCreated): void {
     let feed = Feed.load(event.params.profileId.toString());
     if (!feed) throw new Error("No feed found for profile")
-
-    const feedProfile = Profile.load(feed.profile);
-    if (!feedProfile) throw new Error("No profile found for feed")
-    
-    const followers = feedProfile.followers;
     
     const feedPub = new FeedPub(
         ""
@@ -220,16 +219,47 @@ export function handlePostToFeedCreated(event: PostToFeedCreated): void {
     feedPub.pub = event.params.pubId.toString();
     feedPub.save();
 
-    for(let i = 0; i < followers.length; i++) {
-        // let user = User.load();
+    // distributePostToFollowers(feed, feedPub);
+}
+
+
+
+function distributePostToFollowers(feed: Feed, feedPub: FeedPub): void {
+    const feedProfile = Profile.load(feed.profile);
+    if (!feedProfile) throw new Error("No profile found for feed")
+
+    log.info("feed.profile {}", [feed.profile]);
+
+    // Get followers of feed.
+    // HACK because the graph sucks and can't query computed views from inside mappings,
+    // despite the fact they're deterministic.
+    while(true) {
+        const fromId = '0';
+        const followerEdge = FollowingEdge.load(
+            ""
+                .concat(fromId)
+                .concat("_")
+                .concat(feed.profile)
+        );
+        
+    }
+
+
+
+    const followers = feedProfile.followers;
+    if(!followers) {
+        log.warning("No followers for feed profile {}", [ feedProfile.profileId.toString() ]);
+    }
+
+    for (let i = 0; i < followers.length; i++) {
         let inbox = Inbox.load(followers[i]);
         if (!inbox) throw new Error("No inbox found for profile")
-        
+
         let inboxItem = new InboxItem(
             ""
-            .concat(followers[i])
-            .concat("_")
-            .concat(event.params.pubId.toString())
+                .concat(followers[i])
+                .concat("_")
+                .concat(feedPub.id.toString())
         );
 
         inboxItem.inbox = inbox.id;
@@ -237,6 +267,8 @@ export function handlePostToFeedCreated(event: PostToFeedCreated): void {
         inboxItem.save();
     }
 }
+
+
 
 export function handleProfileCreatorWhitelisted(event: ProfileCreatorWhitelisted): void {
 

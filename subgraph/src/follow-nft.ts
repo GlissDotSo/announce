@@ -5,7 +5,7 @@ import { Transfer } from '../generated/templates/FollowNFT/FollowNFT'
 const ZERO_ADDRESS = Address.fromString('0x0000000000000000000000000000000000000000')
 
 export function handleTransfer(event: Transfer): void {
-    const followNFTContract = FollowNFTContract.load(event.address.toString());
+    const followNFTContract = FollowNFTContract.load(event.address.toHexString());
     if (followNFTContract == null) {
         throw new Error("Follow NFT contract not found");
     }

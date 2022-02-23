@@ -12,13 +12,6 @@ type InboxItem @entity {
   item: FeedPub!
 }
 
-# type Pub @entity {
-#   pubId: Integer
-#   contentURI: String
-#   content: String
-#   profile: Profile!
-# }
-
 type FeedPub @entity {
   id: ID!
   feed: Feed!
@@ -30,6 +23,7 @@ type FeedPub @entity {
 type Feed @entity {
   id: ID!
   profile: Profile!
+  feedId: BigInt!
   # authors: 
   owner: Bytes! # address
   name: String
@@ -37,16 +31,17 @@ type Feed @entity {
 
 type User @entity {
   id: ID!
-  following: [FollowingEdge!]! @derivedFrom(field: "from")
-  followers: [FollowingEdge!]! @derivedFrom(field: "to")
   inbox: Inbox!
   profile: Profile!
 }
 
 type FollowingEdge @entity {
   id: ID!
-  from: User!
-  to: User!
+  
+  # Followed from.
+  from: Profile!
+  # Followed user.
+  to: Profile!
 }
 
 
@@ -81,7 +76,11 @@ type Profile @entity {
   followModule: Bytes! # address
   followModuleReturnData: Bytes!
   dispatcher: Bytes!
-  followers: [Profile!]!
+
+  user: User! @derivedFrom(field: "profile")
+
+  following: [FollowingEdge!]! @derivedFrom(field: "from")
+  followers: [FollowingEdge!]! @derivedFrom(field: "to")
 }
 
 type Comment @entity {
