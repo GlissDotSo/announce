@@ -9,7 +9,7 @@ This development process is organised by sprints. Each sprint I intend to build 
 
 See the [Figma](https://www.figma.com/file/rnDb4hvCABecXdxIe14855/lenshacks?node-id=0%3A1) for product research, validation and wireframes.
 
-### Sprint 1: Discovering Lens Protocol
+### Sprint 1: Discovering Lens Protocol ✅
 
 * Create profile
 * Create publication
@@ -17,14 +17,14 @@ See the [Figma](https://www.figma.com/file/rnDb4hvCABecXdxIe14855/lenshacks?node
 * Follow it
 * Publish another thing to it
 
-### Sprint 2: Building out a prototype.
+### Sprint 2: Building out a prototype. ✅
 
 The open inbox.
 
 * Login with Web3
 * Inbox (show posts from following)
 
-### Sprint 3
+### Sprint 3 🧑‍💻
 
 Publications for creators.
 
