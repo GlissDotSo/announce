@@ -171,10 +171,10 @@ export function handleFollowed(event: Followed): void {
 
 export function handlePostCreated(event: PostCreated): void {
 
-    let entity = Post.load(event.transaction.hash.toHexString());
+    let entity = Post.load(event.params.pubId.toString());
 
     if (!entity) {
-        let entity = new Post(event.transaction.hash.toHexString());
+        let entity = new Post(event.params.pubId.toString());
 
         entity.pubId = event.params.pubId;
         entity.profileId = event.params.profileId.toString();
