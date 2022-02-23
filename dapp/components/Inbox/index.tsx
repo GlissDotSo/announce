@@ -129,7 +129,8 @@ const Item = ({ id, feed, author, pub }: any) => {
             {feed.name}
             {`\n`}
         </b>
-
+        
+        {`@`}
         <ProfileHandleInlineLink profile={author} />
         
         {`  `}
