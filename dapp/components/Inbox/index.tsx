@@ -1,13 +1,6 @@
-
-
-
-const InboxItem = ({ feedPub }: { feedPub: any }) => {
-    
-}
-
-const ANNONCE_SUBGRAPH_URL = 'http://127.0.0.1:8000/subgraphs/name/liamzebedee/annonce'
-
-
+import { useQuery } from 'react-query'
+import Link from 'next/link'
+import { ANNONCE_SUBGRAPH_URL } from '../../config'
 
 async function getInbox(profileId: string) {
     // Fetch the follows for this user.
@@ -90,7 +83,12 @@ async function getInbox(profileId: string) {
                     feedPubs(filter: { author: { in: [${followingProfileIds}] } }, orderBy: createdAt, orderDirection: desc) {
                         id,
                         feed {
-                            name
+                            name,
+                            profile {
+                                profileId,
+                                imageURI,
+                                handle
+                            }
                         },
                         author {
                             id,
@@ -116,34 +114,36 @@ async function getInbox(profileId: string) {
     return posts
 }
 
-import { useQuery } from 'react-query'
 
-const Inbox = () => {
+const ProfileHandleInlineLink = ({ profile }: any) => {
+    return <Link href={`/profiles/${profile.handle}`}>{profile.handle}</Link>
+}
+
+import spotifyStyleTime from 'spotify-style-times'
+
+const Item = ({ id, feed, author, pub }: any) => {
+    return <pre style={{ width: '40%', whiteSpace: 'pre-wrap' }} key={id}>
+        <b>
+            <ProfileHandleInlineLink profile={feed.profile}/>
+            {` — `}
+            {feed.name}
+            {`\n`}
+        </b>
+
+        <ProfileHandleInlineLink profile={author} />
+        
+        {`  `}
+        {spotifyStyleTime(new Date(pub.timestamp * 1000))}
+        {` ago`}
+        {`\n`}
+        
+        {`${pub.content || "Available at " + pub.contentURI}`}
+    </pre>
+}
+
+const ViewInboxPage = () => {
     // Fetch from subgraph.
-    
     const { isLoading, error, data } = useQuery('repoData', () => getInbox('1'))
-
-    /*
-    inbox(user: ${userAddress}) {
-        items(orderBy: createdAt, orderDirection: desc) {
-            feed {
-                profile {
-                    handle, 
-                    imageURI
-                }
-            },
-            author {
-                handle,
-                imageURI
-            },
-            pub {
-                id,
-                contentURI,
-                content
-            }
-        }
-    }
-    */
 
     return <>
         <h2>Inbox</h2>
@@ -157,13 +157,9 @@ const Inbox = () => {
             // </>)
 
             // Show feedPubs.
-            data && data.map(({ id, feed, author, pub }: any) => <>
-                <pre style={{ width: '40%', whiteSpace: 'pre-wrap' }} key={id}>
-                    <b>{`${feed.name}\n`}</b>{`@${author.handle} at ${pub.timestamp}\n${pub.content || "Available at " + pub.contentURI}`}
-                </pre>
-            </>)
+            data && data.map(Item)
         }
     </>
 }
 
-export default Inbox
+export default ViewInboxPage

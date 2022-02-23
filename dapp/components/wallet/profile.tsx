@@ -16,7 +16,7 @@ export const WalletProfile = () => {
                         : accountData.address}
                 </div>
                 {/* <div>Connected to {accountData?.connector?.name}</div> */}
-                <button onClick={disconnect}>Disconnect</button>
+                {/* <button onClick={disconnect}>Disconnect</button> */}
             </div>
         )
     }
