@@ -21,6 +21,8 @@ import { FeedCreated, Feed as FeedContract } from '../generated/Feed/Feed'
 import { Comment, InboxItem, Post, FollowingEdge, Profile, SocialGraph, FollowNFT, FollowNFTContract as FollowNFTContractEntity, ProfileCreatorWhitelist, CollectModuleWhitelist, FollowModuleWhitelist, ReferenceModuleWhitelist, Mirror, User, Inbox, Feed, FeedPub } from "../generated/schema"
 import { FollowNFT as FollowNFTContract } from '../generated/templates'
 
+import { ipfs } from '@graphprotocol/graph-ts'
+
 export function handleProfileCreated(event: ProfileCreated): void {
     let lensContract = LensHub.bind(event.address);
 
@@ -169,14 +171,26 @@ function verifyProfileExists(id: string): void {
 
 export function handlePostCreated(event: PostCreated): void {
 
-    let entity = Post.load(event.params.pubId.toString());
+    const postId = getPostId(event.params.profileId, event.params.pubId);
+    let entity = Post.load(postId);
 
     if (!entity) {
-        let entity = new Post(event.params.pubId.toString());
+        let entity = new Post(postId);
 
         entity.pubId = event.params.pubId;
         entity.profileId = event.params.profileId.toString();
         entity.contentURI = event.params.contentURI;
+
+        log.info("contentURI {}", [event.params.contentURI]);
+        if (entity.contentURI && entity.contentURI.startsWith('ipfs:')) {
+            const ipfsContent = ipfs.cat(entity.contentURI.split('ipfs:')[1]);
+            if (ipfsContent) {
+                entity.content = ipfsContent.toString();
+            } else {
+                log.warning("missing ipfs content for pub {}", [entity.pubId.toString()]);
+            }
+        }
+        
         entity.collectModule = event.params.collectModule;
         entity.collectModuleReturnData = event.params.collectModuleReturnData;
         entity.referenceModule = event.params.referenceModule;
@@ -185,8 +199,6 @@ export function handlePostCreated(event: PostCreated): void {
 
         entity.save();
     }
-
-
 };
 
 export function handleFeedCreated(event: FeedCreated): void {
@@ -203,6 +215,13 @@ export function handleFeedCreated(event: FeedCreated): void {
     feed.save();
 }
 
+function getPostId(authorId: BigInt, pubId: BigInt): string {
+    return ""
+        .concat(authorId.toString())
+        .concat("_")
+        .concat(pubId.toString())
+}
+
 export function handlePostToFeedCreated(event: PostToFeedCreated): void {
     let feed = Feed.load(event.params.profileId.toString());
     if (!feed) throw new Error("No feed found for profile")
@@ -216,59 +235,41 @@ export function handlePostToFeedCreated(event: PostToFeedCreated): void {
     feedPub.author = event.params.authorProfileId.toString();
     feedPub.createdAt = event.block.timestamp;
     feedPub.feed = feed.id;
-    feedPub.pub = event.params.pubId.toString();
+    feedPub.pub = getPostId(event.params.profileId, event.params.pubId);
     feedPub.save();
-
-    // distributePostToFollowers(feed, feedPub);
 }
 
+// function distributePostToFollowers(feed: Feed, feedPub: FeedPub): void {
+//     const feedProfile = Profile.load(feed.profile);
+//     if (!feedProfile) throw new Error("No profile found for feed")
 
+//     log.info("feed.profile {}", [feed.profile]);
 
-function distributePostToFollowers(feed: Feed, feedPub: FeedPub): void {
-    const feedProfile = Profile.load(feed.profile);
-    if (!feedProfile) throw new Error("No profile found for feed")
+//     // Get followers of feed.
+//     // HACK because the graph sucks and can't query computed views from inside mappings,
+//     // despite the fact they're deterministic.
 
-    log.info("feed.profile {}", [feed.profile]);
+//     const followers = feedProfile.followers;
+//     if(!followers) {
+//         log.warning("No followers for feed profile {}", [ feedProfile.profileId.toString() ]);
+//     }
 
-    // Get followers of feed.
-    // HACK because the graph sucks and can't query computed views from inside mappings,
-    // despite the fact they're deterministic.
-    while(true) {
-        const fromId = '0';
-        const followerEdge = FollowingEdge.load(
-            ""
-                .concat(fromId)
-                .concat("_")
-                .concat(feed.profile)
-        );
-        
-    }
+//     for (let i = 0; i < followers.length; i++) {
+//         let inbox = Inbox.load(followers[i]);
+//         if (!inbox) throw new Error("No inbox found for profile")
 
+//         let inboxItem = new InboxItem(
+//             ""
+//                 .concat(followers[i])
+//                 .concat("_")
+//                 .concat(feedPub.id.toString())
+//         );
 
-
-    const followers = feedProfile.followers;
-    if(!followers) {
-        log.warning("No followers for feed profile {}", [ feedProfile.profileId.toString() ]);
-    }
-
-    for (let i = 0; i < followers.length; i++) {
-        let inbox = Inbox.load(followers[i]);
-        if (!inbox) throw new Error("No inbox found for profile")
-
-        let inboxItem = new InboxItem(
-            ""
-                .concat(followers[i])
-                .concat("_")
-                .concat(feedPub.id.toString())
-        );
-
-        inboxItem.inbox = inbox.id;
-        inboxItem.item = feedPub.id;
-        inboxItem.save();
-    }
-}
-
-
+//         inboxItem.inbox = inbox.id;
+//         inboxItem.item = feedPub.id;
+//         inboxItem.save();
+//     }
+// }
 
 export function handleProfileCreatorWhitelisted(event: ProfileCreatorWhitelisted): void {
 

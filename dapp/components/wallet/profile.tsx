@@ -9,13 +9,13 @@ export const WalletProfile = () => {
     if (accountData) {
         return (
             <div>
-                <img src={accountData.ens?.avatar || ''} alt="ENS Avatar" />
+                <img src={accountData.ens?.avatar || ''} />
                 <div>
                     {accountData.ens?.name
                         ? `${accountData.ens?.name} (${accountData.address})`
                         : accountData.address}
                 </div>
-                <div>Connected to {accountData?.connector?.name}</div>
+                {/* <div>Connected to {accountData?.connector?.name}</div> */}
                 <button onClick={disconnect}>Disconnect</button>
             </div>
         )

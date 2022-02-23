@@ -54,6 +54,9 @@ const generateManifest = ({ context, contracts }) => {
 
     return {
         specVersion: SPEC_VERSION,
+        features: [
+            'ipfsOnEthereumContracts'
+        ],
         schema: {
             file: "./schema.graphql"
         },

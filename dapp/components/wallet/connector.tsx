@@ -1,7 +1,9 @@
 import { useAccount, useConnect } from 'wagmi'
 
 const WalletConnector = () => {
-    const [{ data, error }, connect] = useConnect()
+    const [{ data, error }, connect ] = useConnect()
+
+    if(data.connected) return null
 
     return (
         <div>

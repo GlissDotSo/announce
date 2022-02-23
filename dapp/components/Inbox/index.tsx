@@ -100,6 +100,7 @@ async function getInbox(profileId: string) {
                         pub {
                             pubId,
                             contentURI,
+                            content,
                             timestamp
                         }
                     }
@@ -157,8 +158,8 @@ const Inbox = () => {
 
             // Show feedPubs.
             data && data.map(({ id, feed, author, pub }: any) => <>
-                <pre key={id}>
-                    {`${feed.name}\n@${author.handle} at ${pub.timestamp}\n${pub.contentURI}`}
+                <pre style={{ width: '40%', whiteSpace: 'pre-wrap' }} key={id}>
+                    <b>{`${feed.name}\n`}</b>{`@${author.handle} at ${pub.timestamp}\n${pub.content || "Available at " + pub.contentURI}`}
                 </pre>
             </>)
         }

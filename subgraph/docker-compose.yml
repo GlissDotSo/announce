@@ -20,6 +20,8 @@ services:
       # Change next line if you want to connect to a different JSON-RPC endpoint
       ethereum: 'localhost:http://host.docker.internal:8545'
       GRAPH_LOG: info
+      # fix for: `ipfs` is deprecated
+      GRAPH_ALLOW_NON_DETERMINISTIC_IPFS: '1'
   ipfs:
     image: ipfs/go-ipfs:v0.4.23
     ports:
