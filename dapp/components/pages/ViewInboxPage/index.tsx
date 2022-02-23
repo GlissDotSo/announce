@@ -129,7 +129,7 @@ const ProfileHandleInlineLink = ({ profile }: any) => {
 import spotifyStyleTime from 'spotify-style-times'
 
 const Item = ({ id, feed, author, pub }: any) => {
-    return <pre style={{ width: '40%', whiteSpace: 'pre-wrap' }} key={id}>
+    return <pre key={id}>
         <b>
             {/* <ProfileHandleInlineLink profile={feed.profile}/> */}
             <Link href={`/feeds/${feed.feedId}`}>
@@ -153,7 +153,7 @@ const Item = ({ id, feed, author, pub }: any) => {
 
 const ViewInboxPage = () => {
     // Fetch from subgraph.
-    const { isLoading, error, data } = useQuery('repoData', () => getInbox('1'))
+    const { isLoading, error, data } = useQuery('getInbox', () => getInbox('1'))
 
     return <>
         <h2>Inbox</h2>
