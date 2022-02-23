@@ -84,6 +84,7 @@ async function getInbox(profileId: string) {
                         id,
                         feed {
                             name,
+                            feedId,
                             profile {
                                 profileId,
                                 imageURI,
@@ -119,14 +120,20 @@ const ProfileHandleInlineLink = ({ profile }: any) => {
     return <Link href={`/profiles/${profile.handle}`}>{profile.handle}</Link>
 }
 
+// const ProfileHandleInlineLink = ({ profile }: any) => {
+//     return <Link href={`/profiles/${profile.handle}`}>{profile.handle}</Link>
+// }
+
 import spotifyStyleTime from 'spotify-style-times'
 
 const Item = ({ id, feed, author, pub }: any) => {
     return <pre style={{ width: '40%', whiteSpace: 'pre-wrap' }} key={id}>
         <b>
-            <ProfileHandleInlineLink profile={feed.profile}/>
-            {` — `}
-            {feed.name}
+            {/* <ProfileHandleInlineLink profile={feed.profile}/> */}
+            <Link href={`/feeds/${feed.feedId}`}>
+                {feed.profile.handle + ` — ` + feed.name}
+            </Link>
+            
             {`\n`}
         </b>
         

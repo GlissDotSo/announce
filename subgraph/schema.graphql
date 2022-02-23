@@ -27,6 +27,7 @@ type Feed @entity {
   # authors: 
   owner: Bytes! # address
   name: String
+  feedPubs: [FeedPub!]! @derivedFrom(field: "feed")
 }
 
 type User @entity {

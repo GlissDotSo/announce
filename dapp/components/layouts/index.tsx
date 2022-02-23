@@ -26,6 +26,7 @@ const BaseLayout = ({ children }: { children: any }) => {
 
         <main className={styles.main}>
             <WalletConnector />
+            
             <WalletProfile />
 
             <Nav variant="pills" defaultActiveKey="/">
@@ -41,6 +42,13 @@ const BaseLayout = ({ children }: { children: any }) => {
                         <Nav.Link active={router.pathname.startsWith('/profiles')} href='/profiles'>
                         Profiles
                     </Nav.Link>
+                    </Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Link href="/feeds">
+                        <Nav.Link active={router.pathname.startsWith('/feeds')} href='/feeds'>
+                            Feeds
+                        </Nav.Link>
                     </Link>
                 </Nav.Item>
             </Nav>
