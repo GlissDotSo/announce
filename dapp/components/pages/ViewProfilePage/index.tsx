@@ -45,6 +45,7 @@ async function getProfile(handle: string) {
                     profiles(where: { handle: "${handle}" }) {
                         handle,
                         profileId,
+                        owner,
                         following {
                             to {
                                 id
@@ -107,6 +108,7 @@ const ViewProfile = ({ id }) => {
                 {'\n'}
                 {'\n'}
                 {'@'}<ProfileHandleInlineLink profile={data.profile} />{'\n'}
+                {`owned by ${data.profile.owner}\n`}
                 {'\n'}
 
                 <b>{data.following.length} following</b>{'\n'}

@@ -19,3 +19,19 @@ pre {
   max-width: 600px;
   white-space: pre-wrap;
 }
+
+a {
+  color: rgb(43,220,255);
+}
+
+.nav-item,
+.nav-item > *,
+.nav-link {
+  background-color: none!important;
+  color: white;
+}
+
+.nav-link.active {
+  background-color: white!important;
+  color: rgb(39, 39, 39)!important;
+}

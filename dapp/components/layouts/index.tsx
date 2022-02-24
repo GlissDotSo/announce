@@ -1,13 +1,13 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import styles from '../../styles/Home.module.css'
 
 import dynamic from 'next/dynamic'
 import Link from 'next/Link'
 import { Nav, Button } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { useRouter } from 'next/router'
+
+import styles from '../../styles/Home.module.css'
 
 // WORKAROUND: https://github.com/tmm/wagmi/issues/28
 const WalletConnector = dynamic(() => import('../wallet/connector'), { ssr: false })
@@ -20,8 +20,8 @@ const BaseLayout = ({ children }: { children: any }) => {
 
     return <div className={styles.container}>
         <Head>
-            <title>Annonce</title>
-            <link rel="icon" href="/favicon.ico" />
+            <title>Anno</title>
+            <link rel="icon" href="/favicon.png" />
         </Head>
 
         <header className={styles.header}>

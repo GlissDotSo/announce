@@ -36,6 +36,17 @@ async function getProfilesForWallet(wallet: string) {
 const deployments = require('../../../deployments/localhost.json')
 import { AppStore } from '../../state'
 
+function makeRandomId(length: number): string {
+    var result = '';
+    var characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() *
+            charactersLength));
+    }
+    return result;
+}
+
 const LensProfileContextSwitcher = ({ address }: any) => {
     const { isLoading, isError, isSuccess, error, data } = useQuery('get-profiles-for-wallet', () => getProfilesForWallet(address))
     
@@ -52,7 +63,7 @@ const LensProfileContextSwitcher = ({ address }: any) => {
     async function createProfile() {
         const createProfileData = {
             to: address,
-            handle: `${+(new Date) / 1000}`,
+            handle: makeRandomId(7),
             imageURI:
                 'https://ipfs.fleek.co/ipfs/ghostplantghostplantghostplantghostplantghostplantghostplan',
             followModule: ethers.constants.AddressZero,
@@ -82,11 +93,14 @@ const LensProfileContextSwitcher = ({ address }: any) => {
     return <>
         {/* {isSuccess && hasProfile && data.profiles.map((profile: any) => <a href={`#`}>@{profile.handle}</a>) } */}
         {isSuccess && hasProfile && <>
-            {`Logged in as `}{ data.profiles.slice(1).map((profile: any) => <ProfileHandleInlineLink profile={profile}/>) }{'.'}
+            {`Logged in as `}{ data.profiles.slice(0,1).map((profile: any) => <ProfileHandleInlineLink profile={profile}/>) }{'.'}
+            {/* {` `}{data.profiles.map(profile => profile.handle).join(', ')} */}
         </>}
         {isSuccess && !hasProfile && <>{`No profiles detected`}<a onClick={createProfile}> [create one]</a>{'.\n'}</>}
     </>
 }
+
+import styles from '../../styles/Home.module.css'
 
 export const WalletProfile = () => {
     const [{ data: connectData, error: connectError }, connect] = useConnect()
@@ -94,19 +108,28 @@ export const WalletProfile = () => {
         fetchEns: true,
     })
 
-    
+    // {
+    //     accountData.ens?.name
+    //     ? `${accountData.ens?.name} (${accountData.address})`
+    //     : accountData.address
+    // }
 
     if (accountData) {
         return (
-            <div>
-                <img src={accountData.ens?.avatar || ''} />
+            <div className={styles.walletProfile}>
+                {/* <img src={accountData.ens?.avatar || ''} /> */}
+
+                <img className={styles.logo} src="/logo.svg" />
                 <pre>
-                    {`Annonce Terminal [Version 1.0]\n`}
+                    {`Anno Terminal [Version 1.0]\n`}
                     {/* {`(c) 2022 Annonce DAO. All rights on-chain.\n\n`} */}
-                    {`Connected wallet: `}{accountData.ens?.name
-                        ? `${accountData.ens?.name} (${accountData.address})`
-                        : accountData.address}{'.\n'}
+                    {`Connected to wallet ${accountData.address.slice(0, 6)}…${accountData.address.slice(-4)}.`}{'\n'}
                     <LensProfileContextSwitcher address={accountData.address} />
+                </pre>
+
+                <pre>
+                    <i className={styles.online}></i>{` IPFS\n`}
+                    <span className={styles.online}></span>{` Ethereum\n`}
                 </pre>
                 {/* <div>Connected to {accountData?.connector?.name}</div> */}
                 {/* <button onClick={disconnect}>Disconnect</button> */}

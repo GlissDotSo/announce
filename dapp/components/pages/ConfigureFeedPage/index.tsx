@@ -102,8 +102,8 @@ async function getFeed(id: string) {
     return data;
 }
 
-const Action = ({ onClick, children }) => {
-    return <a href='#' style={{ color: '#00d034', textDecoration: 'none' }} onClick={onClick}>[{children}]</a>
+const Action = ({ onClick, href = '#', children }) => {
+    return <span href={href} style={{ color: '#00d034', textDecoration: 'none', cursor: "pointer" }} onClick={onClick}>[{children}]</span>
 }
 
 const ConfigureFeed = ({ id }) => {
