@@ -24,10 +24,14 @@ const BaseLayout = ({ children }: { children: any }) => {
             <link rel="icon" href="/favicon.ico" />
         </Head>
 
-        <main className={styles.main}>
+        <header className={styles.header}>
             <WalletConnector />
-            
             <WalletProfile />
+        </header>
+
+        <main className={styles.main}>
+
+            <pre></pre>
 
             <Nav variant="pills" defaultActiveKey="/">
                 <Nav.Item>

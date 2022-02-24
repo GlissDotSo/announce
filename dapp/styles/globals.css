@@ -16,7 +16,6 @@ a {
 }
 
 pre {
-  /* style={{ width: '40%', whiteSpace: 'pre-wrap' }} */
   max-width: 600px;
   white-space: pre-wrap;
 }

@@ -37,16 +37,38 @@ const connectors = ({ chainId }: { chainId?: number | undefined }) => {
 
 
 import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
+import { useProvider, useCreateStore } from "mobx-store-provider";
+import { AppStore } from "../state";
+import React from 'react'
+import { createContext } from 'react'
+
+
+const store = new AppStore()
+export const StoreContext = createContext<AppStore>(store)
+
+const GlobalAppState = ({ children }: {
+    children: React.ReactNode;
+}) => {
+    const { Provider } = StoreContext
+
+    return <Provider value={store}>
+        {children}
+    </Provider>
+    // return children
+}
+
 
 const queryClient = new QueryClient()
 
 export const Providers = ({ children }: {
     children: React.ReactNode;
 }): JSX.Element => <>
-    <QueryClientProvider client={queryClient}>
-        <WagmiProvider autoConnect connectors={connectors} >
-            {children}
-        </WagmiProvider>
-    </QueryClientProvider>
+    <GlobalAppState>
+        <QueryClientProvider client={queryClient}>
+            <WagmiProvider autoConnect connectors={connectors}>
+                {children}
+            </WagmiProvider>
+        </QueryClientProvider>
+    </GlobalAppState>
 </>
 

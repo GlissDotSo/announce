@@ -305,7 +305,8 @@ function main() {
                 file: './src/mappings.ts',
                 eventHandlers: [
                     { event: 'FeedCreated(indexed uint256,indexed uint256,indexed address)' },
-                    { event: 'PostToFeedCreated(indexed uint256,indexed uint256,indexed uint256,uint256)' }
+                    { event: 'PostToFeedCreated(indexed uint256,indexed uint256,indexed uint256,uint256,uint256)' },
+                    { event: 'FeedProfilePermissionsSet(indexed uint256,indexed uint256,bool)' }
                 ],
                 entities: []
             }

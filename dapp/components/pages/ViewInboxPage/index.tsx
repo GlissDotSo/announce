@@ -156,8 +156,11 @@ const ViewInboxPage = () => {
     const { isLoading, error, data } = useQuery('getInbox', () => getInbox('1'))
 
     return <>
-        <h2>Inbox</h2>
         {/* Show all items in a user's inbox */}
+        <pre>
+            {'\n'}
+            {'\n'}
+        </pre>
         {
             // Show posts.
             // data && data.map(({ pubId, timestamp, profileId, contentURI }: any) => <>
