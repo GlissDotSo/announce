@@ -128,8 +128,9 @@ export const WalletProfile = () => {
                 </pre>
 
                 <pre>
-                    <i className={styles.online}></i>{` IPFS\n`}
-                    <span className={styles.online}></span>{` Ethereum\n`}
+                    <span className={styles.online}></span>{` Blockchain Node\n`}
+                    <span className={styles.online}></span>{` Indexer Node\n`}
+                    <i className={styles.online}></i>{` IPFS Node\n`}
                 </pre>
                 {/* <div>Connected to {accountData?.connector?.name}</div> */}
                 {/* <button onClick={disconnect}>Disconnect</button> */}

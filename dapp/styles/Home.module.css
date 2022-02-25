@@ -3,8 +3,9 @@
   padding-top: 1rem;
 }
 
-.header {
+.header pre {
   
+  font-family: "SF Mono Powerline"!important;
 }
 
 .main {
@@ -18,8 +19,8 @@
 
   background: #313030;
   color: rgb(232,232,232);
-  border-radius: 5px;
-  font-family: "SF Mono Powerline Regular";
+  border-radius: 2px;
+  font-family: "SF Mono Powerline"!important;
 }
 
 .main pre {
