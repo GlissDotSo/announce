@@ -24,10 +24,13 @@ services:
       GRAPH_ALLOW_NON_DETERMINISTIC_IPFS: '1'
   ipfs:
     image: ipfs/go-ipfs:v0.4.23
+    command: "/run-ipfs.sh"
+    entrypoint: sh
     ports:
       - '5001:5001'
     volumes:
       - ./data/ipfs:/data/ipfs
+      - ./run-ipfs.sh:/run-ipfs.sh
   postgres:
     image: postgres
     ports:
