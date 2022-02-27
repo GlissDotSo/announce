@@ -261,7 +261,6 @@ function main() {
                     ...lines(`
                         PostCreated(indexed uint256,indexed uint256,string,address,bytes,address,bytes,uint256)
                         ProfileCreated(indexed uint256,indexed address,indexed address,string,string,address,bytes,string,uint256)
-                        Followed(indexed address,uint256[],uint256[],uint256)
                         FollowNFTDeployed(indexed uint256,indexed address,uint256)
                     `).map(x => { return { event: x } })
                 ],
@@ -309,7 +308,34 @@ function main() {
                     { event: 'FeedProfilePermissionsSet(indexed uint256,indexed uint256,bool)' }
                 ],
                 entities: []
-            }
+            },
+            {
+                name: "FollowGraph",
+                type: "data-source",
+                file: './src/follow-graph.ts',
+                eventHandlers: [
+                    ...lines(`
+                        FollowEdgeChanged(indexed uint256,indexed uint256,bool)
+                    `).map(x => { return { event: x } })
+                ],
+                entities: [
+                    ...lines(`
+                        ProfileCreated
+                        PostCreated
+                        ProfileCreatorWhitelisted
+                        FollowModuleWhitelisted
+                        ReferenceModuleWhitelisted
+                        CollectModuleWhitelisted
+                        DispatcherSet
+                        ProfileImageURISet
+                        FollowNFTURISet
+                        FollowModuleSet
+                        MirrorCreated
+                        CommentCreated
+                        FollowNFTContract
+                    `)
+                ]
+            },
         ]
     })
 

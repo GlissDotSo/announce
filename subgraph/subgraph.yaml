@@ -8,9 +8,9 @@ dataSources:
     name: LensHub
     network: localhost
     source:
-      address: '0x038B86d9d8FAFdd0a02ebd1A476432877b0107C8'
+      address: '0xb81145Beaa1D00c6A99f8C342c6ce354019Ff737'
       abi: LensHub
-      startBlock: 4
+      startBlock: 131
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -36,13 +36,13 @@ dataSources:
           file: ./abis/FollowNFT.json
         - name: Feed
           file: ./abis/Feed.json
+        - name: FollowGraph
+          file: ./abis/FollowGraph.json
       eventHandlers:
         - event: 'PostCreated(indexed uint256,indexed uint256,string,address,bytes,address,bytes,uint256)'
           handler: handlePostCreated
         - event: 'ProfileCreated(indexed uint256,indexed address,indexed address,string,string,address,bytes,string,uint256)'
           handler: handleProfileCreated
-        - event: 'Followed(indexed address,uint256[],uint256[],uint256)'
-          handler: handleFollowed
         - event: 'FollowNFTDeployed(indexed uint256,indexed address,uint256)'
           handler: handleFollowNFTDeployed
       file: ./src/mappings.ts
@@ -50,9 +50,9 @@ dataSources:
     name: Feed
     network: localhost
     source:
-      address: '0x500D1d6A4c7D8Ae28240b47c8FCde034D827fD5e'
+      address: '0xA48096237053a0B74E15cEd6FA33F7c96A5acf50'
       abi: Feed
-      startBlock: 9
+      startBlock: 136
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -65,6 +65,8 @@ dataSources:
           file: ./abis/FollowNFT.json
         - name: Feed
           file: ./abis/Feed.json
+        - name: FollowGraph
+          file: ./abis/FollowGraph.json
       eventHandlers:
         - event: 'FeedCreated(indexed uint256,indexed uint256,indexed address)'
           handler: handleFeedCreated
@@ -73,6 +75,44 @@ dataSources:
         - event: 'FeedProfilePermissionsSet(indexed uint256,indexed uint256,bool)'
           handler: handleFeedProfilePermissionsSet
       file: ./src/mappings.ts
+  - kind: ethereum/contract
+    name: FollowGraph
+    network: localhost
+    source:
+      address: '0x63870142f7D3030a5966bC031F0ae113F1CEB406'
+      abi: FollowGraph
+      startBlock: 137
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - ProfileCreated
+        - PostCreated
+        - ProfileCreatorWhitelisted
+        - FollowModuleWhitelisted
+        - ReferenceModuleWhitelisted
+        - CollectModuleWhitelisted
+        - DispatcherSet
+        - ProfileImageURISet
+        - FollowNFTURISet
+        - FollowModuleSet
+        - MirrorCreated
+        - CommentCreated
+        - FollowNFTContract
+      abis:
+        - name: LensHub
+          file: ./abis/LensHub.json
+        - name: FollowNFT
+          file: ./abis/FollowNFT.json
+        - name: Feed
+          file: ./abis/Feed.json
+        - name: FollowGraph
+          file: ./abis/FollowGraph.json
+      eventHandlers:
+        - event: 'FollowEdgeChanged(indexed uint256,indexed uint256,bool)'
+          handler: handleFollowEdgeChanged
+      file: ./src/follow-graph.ts
 templates:
   - kind: ethereum/contract
     name: FollowNFT
@@ -93,6 +133,8 @@ templates:
           file: ./abis/FollowNFT.json
         - name: Feed
           file: ./abis/Feed.json
+        - name: FollowGraph
+          file: ./abis/FollowGraph.json
       eventHandlers:
         - event: 'Transfer(indexed address,indexed address,indexed uint256)'
           handler: handleTransfer

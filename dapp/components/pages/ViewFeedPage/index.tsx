@@ -195,6 +195,13 @@ const ViewFeed = observer(({ id }: any) => {
             signerOrProvider: signerData
         }
     )
+    const followGraphContract = useContract(
+        {
+            addressOrName: deployments.contracts['FollowGraph'].address,
+            contractInterface: deployments.contracts['FollowGraph'].abi,
+            signerOrProvider: signerData
+        }
+    )
     const feedContract = useContract(
         {
             addressOrName: deployments.contracts['Feed'].address,
@@ -211,21 +218,26 @@ const ViewFeed = observer(({ id }: any) => {
             return
         }
 
-        console.log([
+        const tx = await followGraphContract.follow(
             [profileId],
-            [fromProfileId],
-            [[]]
-        ])
-        const tx = await lensHubContract.follow(
-            [profileId],
-            [fromProfileId],
+            fromProfileId,
             [[]]
         )
         await tx.wait(1)
     }
 
     async function unfollow(profileId: string) {
-        
+        const fromProfileId: string | undefined = store?.profile?.profileId
+        if (!fromProfileId) {
+            console.warn("Not following from a profile")
+            return
+        }
+
+        const tx = await followGraphContract.unfollow(
+            [profileId],
+            fromProfileId
+        )
+        await tx.wait(1)
     }
 
     const [textareaContent, setTextareaContent] = useState('')

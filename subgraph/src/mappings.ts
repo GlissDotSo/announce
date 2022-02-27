@@ -13,8 +13,7 @@ import {
     FollowModuleSet,
     CommentCreated,
     MirrorCreated,
-    FollowNFTDeployed,
-    Followed
+    FollowNFTDeployed
 } from "../generated/LensHub/LensHub"
 import { FeedCreated, PostToFeedCreated, FeedProfilePermissionsSet, Feed as FeedContract } from '../generated/Feed/Feed'
 import { Comment, FeedAuthor, Post, FollowingEdge, Profile, SocialGraph, FollowNFT, FollowNFTContract as FollowNFTContractEntity, ProfileCreatorWhitelist, CollectModuleWhitelist, FollowModuleWhitelist, ReferenceModuleWhitelist, Mirror, User, Inbox, Feed, FeedPub } from "../generated/schema"
@@ -125,57 +124,57 @@ export function handleFollowNFTDeployed(event: FollowNFTDeployed): void {
 
 import { log } from '@graphprotocol/graph-ts'
 
-export function handleFollowed(event: Followed): void {
-    // We don't care about follows from Ethereum accounts. Only profiles.
-    if (event.params.followedFromProfileIds.length == 0) {
-        log.info('Ignoring Followed event since it contains no profile metadata', []);
-        return;
-    }
+// export function handleFollowed(event: Followed): void {
+    // // We don't care about follows from Ethereum accounts. Only profiles.
+    // if (event.params.followedFromProfileIds.length == 0) {
+    //     log.info('Ignoring Followed event since it contains no profile metadata', []);
+    //     return;
+    // }
 
-    const fromProfileIds = event.params.followedFromProfileIds;
-    const toProfileIds = event.params.profileIds;
+    // const fromProfileIds = event.params.followedFromProfileIds;
+    // const toProfileIds = event.params.profileIds;
 
-    // Update the following array.
-    for (let i = 0; i < fromProfileIds.length; i++) {
-        const fromProfileId = fromProfileIds[i];
+    // // Update the following array.
+    // for (let i = 0; i < fromProfileIds.length; i++) {
+    //     const fromProfileId = fromProfileIds[i];
         
-        for (let j = 0; j < toProfileIds.length; j++) {
-            const toProfileId = toProfileIds[j];
-            let edgeId = ""
-                .concat(fromProfileId.toString())
-                .concat("_")
-                .concat(toProfileId.toString());
+    //     for (let j = 0; j < toProfileIds.length; j++) {
+    //         const toProfileId = toProfileIds[j];
+    //         let edgeId = ""
+    //             .concat(fromProfileId.toString())
+    //             .concat("_")
+    //             .concat(toProfileId.toString());
             
-            let edge = FollowingEdge.load(edgeId);
+    //         let edge = FollowingEdge.load(edgeId);
 
-            // TODO: Verify if Lens processes follows only once.
-            if (edge == null) {
+    //         // TODO: Verify if Lens processes follows only once.
+    //         if (edge == null) {
 
-                edge = new FollowingEdge(edgeId);
-                edge.from = fromProfileId.toString();
-                edge.to = toProfileId.toString();
-                edge.save();
+    //             edge = new FollowingEdge(edgeId);
+    //             edge.from = fromProfileId.toString();
+    //             edge.to = toProfileId.toString();
+    //             edge.save();
 
-                // TODO: decrement somewhere.
-                // TODO: proper null checks
-                const fromProfile = Profile.load(fromProfileId.toString());
-                if (fromProfile != null) {
-                    fromProfile.followingCount = fromProfile.followingCount + 1;
-                    fromProfile.save();
-                }
+    //             // TODO: decrement somewhere.
+    //             // TODO: proper null checks
+    //             const fromProfile = Profile.load(fromProfileId.toString());
+    //             if (fromProfile != null) {
+    //                 fromProfile.followingCount = fromProfile.followingCount + 1;
+    //                 fromProfile.save();
+    //             }
 
-                const toProfile = Profile.load(toProfileId.toString());
-                if (toProfile != null) {
-                    toProfile.followersCount = toProfile.followersCount + 1;
-                    toProfile.save();
-                }
+    //             const toProfile = Profile.load(toProfileId.toString());
+    //             if (toProfile != null) {
+    //                 toProfile.followersCount = toProfile.followersCount + 1;
+    //                 toProfile.save();
+    //             }
 
-                verifyProfileExists(fromProfileId.toString());
-                verifyProfileExists(toProfileId.toString());
-            }
-        }
-    }
-};
+    //             verifyProfileExists(fromProfileId.toString());
+    //             verifyProfileExists(toProfileId.toString());
+    //         }
+    //     }
+    // }
+// };
 
 function verifyProfileExists(id: string): void {
     if(Profile.load(id) == null) {
