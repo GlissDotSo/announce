@@ -30,7 +30,7 @@ Publications for creators.
 
 * Create a publication (manual URL).
 * Post to your publication. ✅
-* Edit your publication's settings.
+* Edit your publication's settings. ✅
 
 ### Sprint 4 ✅
 

@@ -2,7 +2,7 @@ import { BaseLayout } from "../../layouts"
 import { useRouter } from 'next/router'
 import { useQuery } from "react-query"
 import { ANNONCE_SUBGRAPH_URL } from "../../../config"
-import { ProfileHandleInlineLink } from "../../utils"
+import { ProfileHandleInlineLink, ShortenedAddy } from "../../utils"
 
 const deployments = require('../../../../deployments/localhost.json')
 import { observer } from "mobx-react-lite"
@@ -287,7 +287,7 @@ const ViewFeed = observer(({ id }: any) => {
                     {'\n'}
                     {'\n'}
                     <b>{data.feed.name}</b> {'@'}<ProfileHandleInlineLink profile={data.feed.profile} />{'\n'}
-                    <b>{data.feed.profile.followersCount} followers</b>{'\n'}
+                    <b>{data.feed.profile.followersCount} followers</b> &middot; owned by <ShortenedAddy addr={data.feed.owner}/>{'\n'}
                     {data.isFollowing
                         ? <Action onClick={() => unfollow(data.feed.profile.profileId)}>unfollow</Action>
                         : <Action onClick={() => follow(data.feed.profile.profileId)}>follow</Action>

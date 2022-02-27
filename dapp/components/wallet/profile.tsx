@@ -4,7 +4,7 @@ import { isError, useQuery } from 'react-query'
 import { useAccount, useConnect, useContractWrite } from 'wagmi'
 import { ANNONCE_SUBGRAPH_URL } from '../../config'
 import { StateContext, StoreContext } from '../../providers/wagmi'
-import { ProfileHandleInlineLink } from '../utils'
+import { ProfileHandleInlineLink, ShortenedAddy } from '../utils'
 
 async function getProfilesForWallet(wallet: string) {
     const res2 = await fetch(`${ANNONCE_SUBGRAPH_URL}`, {
@@ -126,7 +126,7 @@ export const WalletProfile = () => {
                 <pre>
                     {`Anno Terminal [Version 1.0]\n`}
                     {/* {`(c) 2022 Annonce DAO. All rights on-chain.\n\n`} */}
-                    {`Connected to wallet ${accountData.address.slice(0, 6)}…${accountData.address.slice(-4)}.`}{'\n'}
+                    {`Connected to wallet `}<ShortenedAddy addr={accountData.address}/>{'.\n'}
                     <LensProfileContextSwitcher address={accountData.address} />
                 </pre>
 
