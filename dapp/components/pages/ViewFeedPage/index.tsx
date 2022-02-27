@@ -8,7 +8,7 @@ const deployments = require('../../../../deployments/localhost.json')
 import { observer } from "mobx-react-lite"
 import { AppStore } from "../../../state"
 import { StoreContext } from "../../../providers/wagmi"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 
 async function getProfiles(ids: string[]) {
     console.log()
@@ -156,7 +156,7 @@ const Action = ({ onClick, href = '#', children }) => {
 
 import spotifyStyleTime from 'spotify-style-times'
 import Link from "next/link"
-import { useContract, useContractWrite, useProvider, useSigner } from "wagmi"
+import { useAccount, useContract, useContractWrite, useProvider, useSigner } from "wagmi"
 import { uploadToIpfs } from '../../../lib/ipfs'
 
 const Item = ({ id, author, pub }: any) => {
@@ -186,6 +186,9 @@ const ViewFeed = observer(({ id }: any) => {
     const { isLoading, isSuccess, error, data } = useQuery([`getFeed`,id,store.profile], () => getFeed(id as string, store?.profile?.profileId))
     console.log(id, isSuccess, data)
 
+    const [{ data: accountData }] = useAccount({
+        fetchEns: true,
+    })
 
     const [{ data: signerData, error: signerError, loading }, getSigner] = useSigner()
     const lensHubContract = useContract(
@@ -265,12 +268,16 @@ const ViewFeed = observer(({ id }: any) => {
         await feedContract.postToFeed(post1)
     }
 
-    let isAuthor = false
-    if (store?.profile?.profileId && isSuccess) {
-        for (let author of data.feed.authors) {
-            if (author.profileId == store?.profile?.profileId) isAuthor = true
-        }
-    }
+    const isOwner = data?.feed?.owner == accountData?.address.toLowerCase()
+    // let isAuthor = false
+    // const [isAuthor, setIsAuthor] = useState(false)
+    const authorIds = [].concat(
+        data?.feed?.authors.map(author => author.profile.profileId)
+    )
+    const isAuthor = authorIds.includes(store.profile?.profileId)
+    // if (store.profile?.profileId && isSuccess) {
+        
+    // }
 
     const router = useRouter()
     return <>
@@ -284,24 +291,24 @@ const ViewFeed = observer(({ id }: any) => {
                     {data.isFollowing
                         ? <Action onClick={() => unfollow(data.feed.profile.profileId)}>unfollow</Action>
                         : <Action onClick={() => follow(data.feed.profile.profileId)}>follow</Action>
-                    }{` `}<Action onClick={() => router.push(`/feeds/${data.feed.id}/configure`)}>configure</Action>{'\n'}
+                    }{` `}{isOwner && <Action onClick={() => router.push(`/feeds/${data.feed.id}/configure`)}>configure</Action>}{'\n'}
                     {'\n'}
+
+                    {/* {owner: {data.feed.owner}{'\n'} */}
+                    {/* authors: {'\n'}
+                    {' -> '}{data.feed.authors.map((author: any) => <ProfileHandleInlineLink profile={author.profile} />).map(x => <>{x}{`, `}</>)}{'\n'}{'\n'} */}
+
 
  
                     <b>posts{'\n'}</b>
                     {'=====\n\n'}
-                    {/* {isAuthor && <> */}
+                    {isAuthor && <>
                     <textarea style={{ width: '100%' }} onChange={(ev) => setTextareaContent(ev.target.value)}></textarea>
                     <button onClick={() => createPost(textareaContent)}>post</button>{'\n'}{'\n'}
-                    {/* </>} */}
+                    </>}
 
                     {data.feed.feedPubs.map(Item)}
-                    {/* owner: {data.feed.owner}{'\n'}
-                    authors: <Action>add/remove</Action>{'\n'}
-                    {' -> '}{data.feed.authors.map((author: any) => <ProfileHandleInlineLink profile={author.profile} />).map(x => <>{x}{`, `}</>)}{'\n'}
 
-                    {'\n'}
-                    <b>{data.feed.profile.pubCount} posts</b> <Action onClick={createPost}>create</Action>{'\n'}
 
                     {/* <b>{data.following.length} following</b>{'\n'}
                     {data.following.map(profile => <ProfileHandleInlineLink profile={profile} />).map(x => <>{x}{`\n`}</>)} */}

@@ -81,9 +81,12 @@ const LensProfileContextSwitcher = ({ address }: any) => {
     useEffect(() => {
         if (isSuccess) {
             const hasProfile = data.profiles.length > 0
-            if (hasProfile) selectProfile(data.profiles[0])
+            if (hasProfile) {
+                console.debug('selectProfile', data.profiles[0])
+                selectProfile(data.profiles[0])
+            }
         }
-    }, [isSuccess])
+    }, [isSuccess, data])
 
     if(isLoading || isError) return ''
     if(!isSuccess) return ''

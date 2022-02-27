@@ -1,8 +1,7 @@
 
 
 const IPFSHttp = require('ipfs-http-client')
-
-const IPFS_NODE_URI = 'http://localhost:5001'
+const { IPFS_NODE_URI } = require('../config')
 
 function normaliseCID(cid) {
     return cid.asCID.toV1().toString()

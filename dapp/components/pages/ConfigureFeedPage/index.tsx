@@ -3,6 +3,8 @@ import { useRouter } from 'next/router'
 import { useQuery } from "react-query"
 import { ANNONCE_SUBGRAPH_URL } from "../../../config"
 import { ProfileHandleInlineLink } from "../../utils"
+import { useState } from "react"
+import { useContract, useSigner } from "wagmi"
 
 
 async function getProfiles(ids: string[]) {
@@ -106,12 +108,78 @@ const Action = ({ onClick, href = '#', children }) => {
     return <span href={href} style={{ color: '#00d034', textDecoration: 'none', cursor: "pointer" }} onClick={onClick}>[{children}]</span>
 }
 
+const USERNAME_HANDLE_PATTERN = /[a-z0-9]{1,31}$/
+
+const deployments = require('../../../../deployments/localhost.json')
+
 const ConfigureFeed = ({ id }) => {
     const { isLoading, isSuccess, error, data } = useQuery(`getFeed-${id}`, () => getFeed(id as string))
-    console.log(id, isSuccess, data)
 
-    function createPost() {}
-    function follow() {}
+    const [usernameInput, setUsernameInput] = useState("")
+
+    const [{ data: signerData, error: signerError, loading }, getSigner] = useSigner()
+    const lensHubContract = useContract(
+        {
+            addressOrName: deployments.contracts['LensHubProxy'].address,
+            contractInterface: deployments.contracts['LensHubProxy'].abi,
+            signerOrProvider: signerData
+        }
+    )
+    const feedContract = useContract(
+        {
+            addressOrName: deployments.contracts['Feed'].address,
+            contractInterface: deployments.contracts['Feed'].abi,
+            signerOrProvider: signerData
+        }
+    )
+
+    async function setProfilePermissions({ feedId, profileHandle, createPost }: any) {
+        const profileId = await lensHubContract.getProfileIdByHandle(profileHandle)
+        
+        if (profileId.toString() == '0') {
+            throw Error(`Profile for handle "${profileHandle}" not found`)
+        }
+        
+        const tx = await feedContract.setProfilePermissions(
+            feedId,
+            profileId,
+            createPost
+        )
+
+        await tx.wait(1)
+    }
+
+    async function addAuthor() {
+        await setProfilePermissions({
+            feedId: id,
+            profileHandle: usernameInput,
+            createPost: true
+        })
+    }
+    async function removeAuthor(handle: string) {
+        await setProfilePermissions({
+            feedId: id,
+            profileHandle: handle,
+            createPost: false
+        })
+    }
+
+    function onUsernameKeyDown(ev: any) {
+        // console.log(ev.key)
+        if (!USERNAME_HANDLE_PATTERN.test(ev.key) && ev.key != 'Backspace') {
+            ev.preventDefault();
+            ev.stopPropagation();
+        }
+    }
+
+    function onUsernameInputChange(ev: any) {
+        let { value } = ev.target
+        // console.log(USERNAME_HANDLE_PATTERN.exec(value), USERNAME_HANDLE_PATTERN.test(value))
+        // if (USERNAME_HANDLE_PATTERN.test(value)) {
+            
+        // }
+        setUsernameInput(value)
+    }
 
     return <>
         {
@@ -121,17 +189,29 @@ const ConfigureFeed = ({ id }) => {
                     {'\n'}
                     <b>{data.feed.name}</b> {'@'}<ProfileHandleInlineLink profile={data.feed.profile} />{'\n'}
                     owner: {data.feed.owner}{'\n'}
-                    authors: <Action>add/remove</Action>{'\n'}
-                    {' -> '}{data.feed.authors.map((author: any) => <ProfileHandleInlineLink profile={author.profile} />).map(x => <>{x}{`, `}</>)}{'\n'}
+                    authors: {'\n'}
+                    {data.feed.authors
+                        .map((author: any) => {
+                            return <>
+                                {'-> '}<ProfileHandleInlineLink profile={author.profile} />{' '}
+                                <Action onClick={() => removeAuthor(author.profile.handle)}>remove</Action>{'\n'}
+                            </>
+                        })
+                    }
+                    -> <input type='text' value={usernameInput} onChange={onUsernameInputChange} onKeyDown={onUsernameKeyDown} style={{ background: 'transparent', border: 'none', width: 180 }} placeholder='profile username'/>{' '}
+                    <Action onClick={addAuthor}>add</Action>{'\n'}
+
+                    {/* authors: <Action>add/remove</Action>{'\n'} */}
+                    
 
                     {'\n'}
-                    <b>{data.feed.profile.pubCount} posts</b> <Action onClick={createPost}>create</Action>{'\n'}
+                    <b>{data.feed.profile.pubCount} posts</b>{'\n'}
 
                     {/* <b>{data.following.length} following</b>{'\n'}
                     {data.following.map(profile => <ProfileHandleInlineLink profile={profile} />).map(x => <>{x}{`\n`}</>)} */}
 
                     {'\n'}
-                    <b>{data.followers.length} followers</b> <Action onClick={follow}>follow</Action>{'\n'}
+                    <b>{data.followers.length} followers</b>{'\n'}
                     {data.followers.map((profile: any) => <ProfileHandleInlineLink profile={profile} />).map(x => <>{x}{`\n`}</>)}
                 </pre>
             </>

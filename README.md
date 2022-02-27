@@ -29,15 +29,15 @@ The open inbox.
 Publications for creators.
 
 * Create a publication (manual URL).
-* Post to your publication.
+* Post to your publication. ✅
 * Edit your publication's settings.
 
-### Sprint 4
+### Sprint 4 ✅
 
 Publications for followers.
 
 * View publication page.
-* Follow/unfollow publication.
+* Follow/unfollow publication. 
 
 ## Risks
 
