@@ -15,7 +15,7 @@ import {
     MirrorCreated,
     FollowNFTDeployed,
     Followed
-} from "../generated/templates/LensHub/LensHub"
+} from "../generated/LensHub/LensHub"
 import { FeedCreated, PostToFeedCreated, FeedProfilePermissionsSet, Feed as FeedContract } from '../generated/Feed/Feed'
 import { Comment, FeedAuthor, Post, FollowingEdge, Profile, SocialGraph, FollowNFT, FollowNFTContract as FollowNFTContractEntity, ProfileCreatorWhitelist, CollectModuleWhitelist, FollowModuleWhitelist, ReferenceModuleWhitelist, Mirror, User, Inbox, Feed, FeedPub } from "../generated/schema"
 import { FollowNFT as FollowNFTContract } from '../generated/templates'
