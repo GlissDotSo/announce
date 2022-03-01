@@ -25,7 +25,6 @@ const BaseLayout = ({ children }: { children: any }) => {
         </Head>
 
         <header className={styles.header}>
-            <WalletConnector />
             <WalletProfile />
         </header>
 
@@ -42,9 +41,9 @@ const BaseLayout = ({ children }: { children: any }) => {
                     </Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Link href="/feeds">
-                        <Nav.Link active={router.pathname.startsWith('/feeds')} href='/feeds'>
-                            Feeds
+                    <Link href="/publications">
+                        <Nav.Link active={router.pathname.startsWith('/publications')} href='/publications'>
+                            Publications
                         </Nav.Link>
                     </Link>
                 </Nav.Item>

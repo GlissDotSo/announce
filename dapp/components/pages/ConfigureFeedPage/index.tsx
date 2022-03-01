@@ -5,6 +5,7 @@ import { ANNONCE_SUBGRAPH_URL } from "../../../config"
 import { ProfileHandleInlineLink } from "../../utils"
 import { useState } from "react"
 import { useContract, useSigner } from "wagmi"
+import styles from '../../../styles/Home.module.css'
 
 
 async function getProfiles(ids: string[]) {
@@ -198,7 +199,7 @@ const ConfigureFeed = ({ id }) => {
                             </>
                         })
                     }
-                    -> <input type='text' value={usernameInput} onChange={onUsernameInputChange} onKeyDown={onUsernameKeyDown} style={{ background: 'transparent', border: 'none', width: 180 }} placeholder='profile username'/>{' '}
+                    -> <input type='text' className={styles.textInput} value={usernameInput} onChange={onUsernameInputChange} onKeyDown={onUsernameKeyDown} style={{ width: 180 }} placeholder='profile username'/>{' '}
                     <Action onClick={addAuthor}>add</Action>{'\n'}
 
                     {/* authors: <Action>add/remove</Action>{'\n'} */}

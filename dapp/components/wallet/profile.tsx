@@ -104,6 +104,7 @@ const LensProfileContextSwitcher = ({ address }: any) => {
 }
 
 import styles from '../../styles/Home.module.css'
+import WalletConnector from './connector'
 
 export const WalletProfile = () => {
     const [{ data: connectData, error: connectError }, connect] = useConnect()
@@ -116,32 +117,38 @@ export const WalletProfile = () => {
     //     ? `${accountData.ens?.name} (${accountData.address})`
     //     : accountData.address
     // }
-
-    if (accountData) {
-        return (
-            <div className={styles.walletProfile}>
-                {/* <img src={accountData.ens?.avatar || ''} /> */}
-
-                <img className={styles.logo} src="/logo.svg" />
-                <pre>
-                    {`Anno Terminal [Version 1.0]\n`}
-                    {/* {`(c) 2022 Annonce DAO. All rights on-chain.\n\n`} */}
-                    {`Connected to wallet `}<ShortenedAddy addr={accountData.address}/>{'.\n'}
-                    <LensProfileContextSwitcher address={accountData.address} />
-                </pre>
-
-                <pre>
-                    <span className={styles.online}></span>{` Blockchain Node\n`}
-                    <span className={styles.online}></span>{` Indexer Node\n`}
-                    <i className={styles.online}></i>{` IPFS Node\n`}
-                </pre>
-                {/* <div>Connected to {accountData?.connector?.name}</div> */}
-                {/* <button onClick={disconnect}>Disconnect</button> */}
-            </div>
-        )
+    let walletInfo
+    if(accountData) {
+        walletInfo = <>
+            { `Connected to wallet ` } <ShortenedAddy addr={accountData.address} />{ '.\n' }
+            <LensProfileContextSwitcher address={accountData.address} />
+        </>
+    } else {
+        walletInfo = <>
+            {`No wallet connected.`}
+            <WalletConnector />
+        </>
     }
 
-    return <>Not connected</>
+    return (
+        <div className={styles.walletProfile}>
+            {/* <img src={accountData.ens?.avatar || ''} /> */}
+
+            <img className={styles.logo} src="/logo.svg" />
+            <pre>
+                {`Anno Terminal [Version 1.0]\n`}
+                {walletInfo}
+            </pre>
+
+            <pre>
+                <span className={styles.online}></span>{` Blockchain Node\n`}
+                <span className={styles.online}></span>{` Indexer Node\n`}
+                <i className={styles.online}></i>{` IPFS Node\n`}
+            </pre>
+            {/* <div>Connected to {accountData?.connector?.name}</div> */}
+            {/* <button onClick={disconnect}>Disconnect</button> */}
+        </div>
+    )
 }
 
 export default WalletProfile 

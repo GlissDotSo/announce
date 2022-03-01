@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { useQuery } from "react-query"
 import { ANNONCE_SUBGRAPH_URL } from "../../../config"
 import { ProfileHandleInlineLink, ShortenedAddy } from "../../utils"
+import styles from '../../../styles/Home.module.css'
 
 const deployments = require('../../../../deployments/localhost.json')
 import { observer } from "mobx-react-lite"
@@ -87,7 +88,8 @@ async function getFeed(id: string, fromProfileId: string) {
                                 handle
                             }
                         },
-                        feedPubs {
+                        feedPubs(orderBy: createdAt, orderDirection: desc) {
+                            createdAt,
                             author {
                                 id,
                                 handle,
@@ -149,7 +151,7 @@ async function getFeed(id: string, fromProfileId: string) {
 }
 
 const Action = ({ onClick, href = '#', children }) => {
-    return <span href={href} style={{ color: '#00d034', textDecoration: 'none', cursor: "pointer" }} onClick={onClick}>[{children}]</span>
+    return <button onClick={onClick}>{children}</button>
 }
 
 
@@ -186,9 +188,7 @@ const ViewFeed = observer(({ id }: any) => {
     const { isLoading, isSuccess, error, data } = useQuery([`getFeed`,id,store.profile], () => getFeed(id as string, store?.profile?.profileId))
     console.log(id, isSuccess, data)
 
-    const [{ data: accountData }] = useAccount({
-        fetchEns: true,
-    })
+    const [{ data: accountData }] = useAccount()
 
     const [{ data: signerData, error: signerError, loading }, getSigner] = useSigner()
     const lensHubContract = useContract(
@@ -291,7 +291,7 @@ const ViewFeed = observer(({ id }: any) => {
                     {data.isFollowing
                         ? <Action onClick={() => unfollow(data.feed.profile.profileId)}>unfollow</Action>
                         : <Action onClick={() => follow(data.feed.profile.profileId)}>follow</Action>
-                    }{` `}{isOwner && <Action onClick={() => router.push(`/feeds/${data.feed.id}/configure`)}>configure</Action>}{'\n'}
+                    }{` `}{isOwner && <Action onClick={() => router.push(`/publications/${data.feed.id}/configure`)}>configure</Action>}{'\n'}
                     {'\n'}
 
                     {/* {owner: {data.feed.owner}{'\n'} */}
@@ -303,7 +303,7 @@ const ViewFeed = observer(({ id }: any) => {
                     <b>posts{'\n'}</b>
                     {'=====\n\n'}
                     {isAuthor && <>
-                    <textarea style={{ width: '100%' }} onChange={(ev) => setTextareaContent(ev.target.value)}></textarea>
+                    <textarea className={styles.textarea} style={{ width: '100%' }} onChange={(ev) => setTextareaContent(ev.target.value)} placeholder={`Write something to ${data.feed.name}...`}></textarea>
                     <button onClick={() => createPost(textareaContent)}>post</button>{'\n'}{'\n'}
                     </>}
 

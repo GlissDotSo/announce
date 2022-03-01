@@ -2,10 +2,98 @@ import { BaseLayout } from "../../layouts"
 import { useRouter } from 'next/router'
 import { useQuery } from "react-query"
 import { ANNONCE_SUBGRAPH_URL } from "../../../config"
-import { ProfileHandleInlineLink } from "../../utils"
+import { Action, ProfileHandleInlineLink } from "../../utils"
 import { Container, Row } from "react-bootstrap"
 import Link from "next/link"
+import { useContext } from "react"
+import { StoreContext } from "../../../providers/wagmi"
+import { useAccount } from "wagmi"
 
+async function getOwnedFeeds(account: string) {
+    const res2 = await fetch(`${ANNONCE_SUBGRAPH_URL}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+        mode: 'cors',
+        body: JSON.stringify({
+            query: `
+                {
+                    feeds(filter: {
+                        owner: "${account}"
+                    }) {
+                        id,
+                        feedId,
+                        name,
+                        authors {
+                            profile {
+                                handle
+                            },
+                        },
+                        profile {
+                            handle,
+                            profileId,
+                            imageURI,
+                            pubCount,
+                            followersCount,
+                            followingCount
+                        }
+                    }
+                }
+            `
+        })
+    })
+        .then(x => x.json())
+
+
+    return res2.data?.feeds
+}
+
+or: { owner: "${account}" }
+
+async function getYourFeeds(profileId: string, account: string) {
+    const res2 = await fetch(`${ANNONCE_SUBGRAPH_URL}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+        mode: 'cors',
+        body: JSON.stringify({
+            query: `
+                {
+                    feedAuthors(filter: { 
+                        author_in: ["${profileId}"]
+                    }) {
+                        id,
+                        feed {
+                            feedId,
+                            name,
+                            authors {
+                                profile {
+                                    handle
+                                },
+                            },
+                            profile {
+                                handle,
+                                profileId,
+                                imageURI,
+                                pubCount,
+                                followersCount,
+                                followingCount
+                            }
+                        }
+                    }
+                }
+            `
+        })
+    })
+        .then(x => x.json())
+
+
+    return res2.data?.feedAuthors.map((feedAuthor: any) => feedAuthor.feed)
+}
 
 async function getFeeds(ids: string[]) {
     const res2 = await fetch(`${ANNONCE_SUBGRAPH_URL}`, {
@@ -47,14 +135,26 @@ async function getFeeds(ids: string[]) {
 }
 
 const FeedInlineLink = ({ feed }: any) => {
-    return <Link href={`/feeds/${feed.feedId}`}>
+    return <Link href={`/publications/${feed.feedId}`}>
         {feed.profile.handle + ` — ` + feed.name}
     </Link>
 }
 
 const Feeds = () => {
-    const { isLoading, isSuccess, error, data } = useQuery(`getFeeds`, () => getFeeds())
+    const store = useContext(StoreContext)
 
+    const [{ data: accountData }] = useAccount()
+    
+    const { isLoading, isSuccess, error, data } = useQuery(`getFeeds`, () => getFeeds())
+    const yourFeedsRes = useQuery([`getYourFeeds`, store.profile?.profileId, accountData?.address], () => getYourFeeds(store.profile?.profileId, accountData?.address.toLowerCase()))
+    const ownedFeedsRes = useQuery([`getOwnedFeeds`, accountData?.address], () => getOwnedFeeds(accountData?.address.toLowerCase()))
+
+    
+    console.log(getOwnedFeeds.data)
+
+
+
+    const router = useRouter()
     const renderFeed = (feed: any) => {
         return <pre>
             {'\n'}
@@ -67,12 +167,35 @@ const Feeds = () => {
 
     return <>
         {
-            isSuccess && <>
+            (isSuccess && ownedFeedsRes.isSuccess && yourFeedsRes.isSuccess) && <>
                 <pre>
+
+                    {'\n'}
+                    {'\n'}
+                    <Action onClick={() => router.push('/publications/create')}>create a publication</Action>
+                    {'\n'}
+                    {'\n'}
                     {'\n'}
 
-                    {data.map(feed => renderFeed(feed))}
+                    <b>publications you own</b>{'\n'}
+                    {"publications you own".split(/./).map(x => '=')}{'\n'}
 
+                    {ownedFeedsRes.data.map(feed => renderFeed(feed))}
+                    {'\n'}
+                    {'\n'}
+
+                    <b>publications you contribute to</b>{'\n'}
+                    {"publications you contribute to".split(/./).map(x => '=')}{'\n'}
+
+                    {yourFeedsRes.data.map(feed => renderFeed(feed))}
+                    {'\n'}
+                    {'\n'}
+
+                    {/* <b>all publications</b>{'\n'}
+                    {`================`}{'\n'}
+                    {data.map(feed => renderFeed(feed))} */}
+
+                    {'\n'}
                     {'\n'}
                 </pre>
             </>

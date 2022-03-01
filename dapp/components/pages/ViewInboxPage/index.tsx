@@ -132,7 +132,7 @@ const Item = ({ id, feed, author, pub }: any) => {
     return <pre key={id}>
         <b>
             {/* <ProfileHandleInlineLink profile={feed.profile}/> */}
-            <Link href={`/feeds/${feed.feedId}`}>
+            <Link href={`/publications/${feed.feedId}`}>
                 {feed.profile.handle + ` — ` + feed.name}
             </Link>
             
