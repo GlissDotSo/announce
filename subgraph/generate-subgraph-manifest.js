@@ -65,12 +65,9 @@ const generateManifest = ({ context, contracts }) => {
     }
 }
 
-/**
- * 
- */
 function load(data) {
     const { network } = data
-    const deployments = require(`../deployments/${network}.json`)
+    const deployments = require(`../deployments/${network}/anno.json`)
 
     const contracts = data.contracts.map((contract) => {
         const { name, entities, file } = contract
