@@ -4,7 +4,7 @@ const ANNONCE_SUBGRAPH_URL = process.env.NEXT_PUBLIC_ANNONCE_SUBGRAPH_URL
 const IPFS_NODE_URI = process.env.NEXT_PUBLIC_IPFS_NODE_URI
 
 Object.entries({ ANNONCE_SUBGRAPH_URL, IPFS_NODE_URI }).map(([ k, v ]) => {
-    if(!v) throw new Error(`Environment variable ${k} not defined`)
+    if(!v) throw new Error(`Environment variable NEXT_PUBLIC_${k} not defined`)
 })
 
 const deployments = {
