@@ -136,7 +136,7 @@ export const WalletProfile = () => {
         <div className={styles.walletProfile}>
             {/* <img src={accountData.ens?.avatar || ''} /> */}
 
-            <Image className={styles.logo} src="/logo.svg" />
+            <img className={styles.logo} src="/logo.svg" />
             <pre>
                 {`Anno Terminal [Version 1.0]\n`}
                 {walletInfo}
