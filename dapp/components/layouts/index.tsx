@@ -3,7 +3,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 
 import dynamic from 'next/dynamic'
-import Link from 'next/Link'
+import Link from 'next/link'
 import { Nav, Button } from 'react-bootstrap';
 import { useRouter } from 'next/router'
 

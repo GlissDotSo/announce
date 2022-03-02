@@ -11,7 +11,7 @@ export const ShortenedAddy = ({ addr }: { addr: string }) => {
 
     let s = addr
     if(!expanded) {
-        s = `${ addr.slice(0, 6)}…${ addr.slice(-4) }.`
+        s = `${ addr.slice(0, 6)}…${ addr.slice(-4) }`
     }
     
     return <span onClick={() => setExpanded(!expanded)}>{s}</span>

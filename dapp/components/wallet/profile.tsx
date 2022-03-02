@@ -120,7 +120,7 @@ export const WalletProfile = () => {
     let walletInfo
     if(accountData) {
         walletInfo = <>
-            { `Connected to wallet ` } <ShortenedAddy addr={accountData.address} />{ '.\n' }
+            { `Connected to wallet ` }<ShortenedAddy addr={accountData.address} />{ '.\n' }
             <LensProfileContextSwitcher address={accountData.address} />
         </>
     } else {
