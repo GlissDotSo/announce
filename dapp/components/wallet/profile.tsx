@@ -33,9 +33,6 @@ async function getProfilesForWallet(wallet: string) {
     }
 }
 
-const deployments = require('../../../deployments/localhost.json')
-import { AppStore } from '../../state'
-
 function makeRandomId(length: number): string {
     var result = '';
     var characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -52,7 +49,7 @@ const LensProfileContextSwitcher = ({ address }: any) => {
     const { isLoading, isError, isSuccess, error, data } = query
     
     const store = useContext(StoreContext)
-
+    const [{ deployments }] = useDeployments()
     const [{ data: txData, error: txErr, loading }, write] = useContractWrite(
         {
             addressOrName: deployments.contracts['LensHubProxy'].address,
@@ -107,6 +104,7 @@ const LensProfileContextSwitcher = ({ address }: any) => {
 import styles from '../../styles/Home.module.css'
 import WalletConnector from './connector'
 import Image from 'next/image'
+import { useDeployments } from '../../hooks'
 
 export const WalletProfile = () => {
     const [{ data: connectData, error: connectError }, connect] = useConnect()

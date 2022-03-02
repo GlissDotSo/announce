@@ -6,6 +6,7 @@ import { ProfileHandleInlineLink } from "../../utils"
 import { useState } from "react"
 import { useContract, useSigner } from "wagmi"
 import styles from '../../../styles/Home.module.css'
+import { useDeployments } from "../../../hooks"
 
 
 async function getProfiles(ids: string[]) {
@@ -111,13 +112,12 @@ const Action = ({ onClick, href = '#', children }: any) => {
 
 const USERNAME_HANDLE_PATTERN = /[a-z0-9]{1,31}$/
 
-const deployments = require('../../../../deployments/localhost.json')
-
 const ConfigureFeed = ({ id }: { id: string }) => {
     const query = useQuery(`getFeed-${id}`, () => getFeed(id as string))
     const { isLoading, isSuccess, error } = query
 
     const [usernameInput, setUsernameInput] = useState("")
+    const [{ deployments }] = useDeployments()
 
     const [{ data: signerData, error: signerError, loading }, getSigner] = useSigner()
     const lensHubContract = useContract(

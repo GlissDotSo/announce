@@ -9,7 +9,7 @@ import styles from '../../../styles/Home.module.css'
 import { useState } from "react"
 import { useAccount, useContract, useSigner } from "wagmi"
 import { ethers } from "ethers"
-const deployments = require('../../../../deployments/localhost.json')
+import { useDeployments } from "../../../hooks"
 
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -21,6 +21,7 @@ const CreateFeed = () => {
     
     const [{ data: accountData }] = useAccount()
     const [{ data: signerData, error: signerError, loading }, getSigner] = useSigner()
+    const [{ deployments }] = useDeployments()
     const lensHubContract = useContract(
         {
             addressOrName: deployments.contracts['LensHubProxy'].address,

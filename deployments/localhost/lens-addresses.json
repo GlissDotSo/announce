@@ -1,0 +1,21 @@
+{
+  "lensHub proxy": "0xf89AA2f1397e9A0622c8Fc99aB1947E28b5EF876",
+  "lensHub impl:": "0xe2607EabC87fd0A4856840bF23da8458cDF0434F",
+  "publishing logic lib": "0xA4765Ff72A9F3CfE73089bb2c3a41B838DF71574",
+  "interaction logic lib": "0x35c1419Da7cf0Ff885B8Ef8EA9242FEF6800c99b",
+  "follow NFT impl": "0xe55aa921a1001f0a19241264a50063683d2e1179",
+  "collect NFT impl": "0x6602fca48e95f5068506963e3a8930131108048a",
+  "currency": "0x1a66D6103F8BBf9204E1618F095a80b3E4817C95",
+  "module globals": "0x920d847fE49E54C19047ba8bc236C45A8068Bca7",
+  "fee collect module": "0x8BFFF31B1757da579Bb5B118489568526F7fb6D4",
+  "limited fee collect module": "0x0459c841b02Aee8730730C737582c53B20a27288",
+  "timed fee collect module": "0x2530ce07D254eA185E8e0bCC37a39e2FbA3bE548",
+  "limited timed fee collect module": "0x0Cf45557d25a4e4c0F1aC65EF6c48ae67c61a0E6",
+  "revert collect module": "0x7fAeC7791277Ff512c41CA903c177B2Ed952dDAc",
+  "empty collect module": "0x33958cC3535Fc328369EAC2B2Bebd120D67C7fa1",
+  "fee follow module": "0x2cBbbBE1B75Ad7848F0844215816F551f429c64f",
+  "approval follow module": "0xbAc762e2000b6815268587b081Fd17aC25519aD5",
+  "follower only reference module": "0xa43Ba00FCA75B805D17f67F9433b971E9a398690",
+  "feed": "0x0EBCa695959e5f138Af772FAa44ce1A9C7aEd921",
+  "follow graph": "0x417fc1038b2AF553D65F4fF2839efE9f93Ec1eac"
+}

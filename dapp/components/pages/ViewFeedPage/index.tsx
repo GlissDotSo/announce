@@ -5,7 +5,6 @@ import { ANNONCE_SUBGRAPH_URL } from "../../../config"
 import { Action, ProfileHandleInlineLink, ShortenedAddy } from "../../utils"
 import styles from '../../../styles/Home.module.css'
 
-const deployments = require('../../../../deployments/localhost.json')
 import { observer } from "mobx-react-lite"
 import { AppStore } from "../../../state"
 import { StoreContext } from "../../../providers/wagmi"
@@ -16,6 +15,7 @@ import { useAccount, useContract, useContractWrite, useProvider, useSigner } fro
 import { uploadToIpfs } from '../../../lib/ipfs'
 
 import { ethers } from "ethers"
+import { useDeployments } from "../../../hooks"
 
 const addrs = require('../../../../lens-protocol/addresses.json')
 
@@ -184,6 +184,7 @@ const ViewFeed = observer(({ id }: { id: string }) => {
     const { isLoading, isSuccess, error, data } = useQuery([`getFeed`,id,store.profile], () => getFeed(id, store?.profile?.profileId))
 
     const [{ data: accountData }] = useAccount()
+    const [{ deployments }] = useDeployments()
 
     const [{ data: signerData, error: signerError, loading }, getSigner] = useSigner()
     const lensHubContract = useContract(
