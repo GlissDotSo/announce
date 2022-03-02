@@ -17,8 +17,6 @@ import { uploadToIpfs } from '../../../lib/ipfs'
 import { ethers } from "ethers"
 import { useDeployments } from "../../../hooks"
 
-const addrs = require('../../../../lens-protocol/addresses.json')
-
 async function getProfiles(ids: string[]) {
     console.log()
 
@@ -184,7 +182,7 @@ const ViewFeed = observer(({ id }: { id: string }) => {
     const { isLoading, isSuccess, error, data } = useQuery([`getFeed`,id,store.profile], () => getFeed(id, store?.profile?.profileId))
 
     const [{ data: accountData }] = useAccount()
-    const [{ deployments }] = useDeployments()
+    const [{ deployments, lensAddresses }] = useDeployments()
 
     const [{ data: signerData, error: signerError, loading }, getSigner] = useSigner()
     const lensHubContract = useContract(
@@ -255,9 +253,9 @@ const ViewFeed = observer(({ id }: { id: string }) => {
             contentURI: `ipfs:${upload.cid}`,
 
             // TODO: Future design decisions about these variables.
-            collectModule: addrs['empty collect module'],
+            collectModule: lensAddresses['empty collect module'],
             collectModuleData: [],
-            referenceModule: addrs['follower only reference module'],
+            referenceModule: lensAddresses['follower only reference module'],
             referenceModuleData: [],
         }
 

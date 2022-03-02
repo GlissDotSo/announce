@@ -1,10 +1,12 @@
 
-import { deployments } from '../config'
+import { deployments, lensAddresses } from '../config'
 
 export const useDeployments = () => {
     // TODO: switch network.
+    
     const ctx = {
-        deployments: deployments.localhost
+        deployments: deployments.localhost,
+        lensAddresses: lensAddresses.localhost
     }
     return [ctx]
 }

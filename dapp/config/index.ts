@@ -12,8 +12,14 @@ const deployments = {
     // 'polygon-mainnet': require('../../deployments/polygon-mainnet.json')
 }
 
+const lensAddresses = {
+    'localhost': require('../../deployments/localhost/lens-addresses.json'),
+    // 'polygon-mainnet': require('../../deployments/polygon-mainnet.json')
+}
+
 export {
     ANNONCE_SUBGRAPH_URL, 
     IPFS_NODE_URI,
-    deployments
+    deployments,
+    lensAddresses
 }
