@@ -2,7 +2,7 @@ import { BaseLayout } from "../../layouts"
 import { useRouter } from 'next/router'
 import { useQuery } from "react-query"
 import { ANNONCE_SUBGRAPH_URL } from "../../../config"
-import { ProfileHandleInlineLink, ShortenedAddy } from "../../utils"
+import { Action, ProfileHandleInlineLink, ShortenedAddy } from "../../utils"
 import styles from '../../../styles/Home.module.css'
 
 const deployments = require('../../../../deployments/localhost.json')
@@ -10,6 +10,14 @@ import { observer } from "mobx-react-lite"
 import { AppStore } from "../../../state"
 import { StoreContext } from "../../../providers/wagmi"
 import { useContext, useEffect, useState } from "react"
+
+import spotifyStyleTime from 'spotify-style-times'
+import { useAccount, useContract, useContractWrite, useProvider, useSigner } from "wagmi"
+import { uploadToIpfs } from '../../../lib/ipfs'
+
+import { ethers } from "ethers"
+
+const addrs = require('../../../../lens-protocol/addresses.json')
 
 async function getProfiles(ids: string[]) {
     console.log()
@@ -150,16 +158,8 @@ async function getFeed(id: string, fromProfileId: string) {
     return data;
 }
 
-const Action = ({ onClick, href = '#', children }) => {
-    return <button onClick={onClick}>{children}</button>
-}
 
 
-
-import spotifyStyleTime from 'spotify-style-times'
-import Link from "next/link"
-import { useAccount, useContract, useContractWrite, useProvider, useSigner } from "wagmi"
-import { uploadToIpfs } from '../../../lib/ipfs'
 
 const Item = ({ id, author, pub }: any) => {
     return <pre key={id}>
@@ -176,17 +176,12 @@ const Item = ({ id, author, pub }: any) => {
     </pre>
 }
 
-import Editor from "rich-markdown-editor"; 
-import { ethers } from "ethers"
 
-const addrs = require('../../../../lens-protocol/addresses.json')
-
-const ViewFeed = observer(({ id }: any) => {
+const ViewFeed = observer(({ id }: { id: string }) => {
     const store = useContext(StoreContext)
 
     // const { isLoading, isError, isSuccess, error, data } = useQuery('get-profiles-for-wallet', () => getProfilesForWallet(address))
-    const { isLoading, isSuccess, error, data } = useQuery([`getFeed`,id,store.profile], () => getFeed(id as string, store?.profile?.profileId))
-    console.log(id, isSuccess, data)
+    const { isLoading, isSuccess, error, data } = useQuery([`getFeed`,id,store.profile], () => getFeed(id, store?.profile?.profileId))
 
     const [{ data: accountData }] = useAccount()
 
@@ -254,7 +249,7 @@ const ViewFeed = observer(({ id }: any) => {
         
 
         const post1 = {
-            feedId: ethers.BigNumber.from(data.feed.id),
+            feedId: ethers.BigNumber.from(id),
             authorProfileId: ethers.BigNumber.from(store?.profile?.profileId),
             contentURI: `ipfs:${upload.cid}`,
 
@@ -269,20 +264,15 @@ const ViewFeed = observer(({ id }: any) => {
     }
 
     const isOwner = data?.feed?.owner == accountData?.address.toLowerCase()
-    // let isAuthor = false
-    // const [isAuthor, setIsAuthor] = useState(false)
-    const authorIds = [].concat(
-        data?.feed?.authors.map(author => author.profile.profileId)
+    const authorIds: string[] = [].concat(
+        data?.feed?.authors.map((author: any) => author.profile.profileId)
     )
     const isAuthor = authorIds.includes(store.profile?.profileId)
-    // if (store.profile?.profileId && isSuccess) {
-        
-    // }
 
     const router = useRouter()
     return <>
         {
-            isSuccess && <>
+            (isSuccess && data) && <>
                 <pre>
                     {'\n'}
                     {'\n'}
@@ -330,7 +320,7 @@ function ViewFeedPage(args: any) {
     }
 
     return <BaseLayout>
-        <ViewFeed id={id} />
+        <ViewFeed id={id as string} />
     </BaseLayout>
 }
 

@@ -3,7 +3,7 @@ import { useContext, useEffect } from 'react'
 import { isError, useQuery } from 'react-query'
 import { useAccount, useConnect, useContractWrite } from 'wagmi'
 import { ANNONCE_SUBGRAPH_URL } from '../../config'
-import { StateContext, StoreContext } from '../../providers/wagmi'
+import { StoreContext } from '../../providers/wagmi'
 import { ProfileHandleInlineLink, ShortenedAddy } from '../utils'
 
 async function getProfilesForWallet(wallet: string) {
@@ -48,7 +48,8 @@ function makeRandomId(length: number): string {
 }
 
 const LensProfileContextSwitcher = ({ address }: any) => {
-    const { isLoading, isError, isSuccess, error, data } = useQuery('get-profiles-for-wallet', () => getProfilesForWallet(address))
+    const query = useQuery('get-profiles-for-wallet', () => getProfilesForWallet(address))
+    const { isLoading, isError, isSuccess, error, data } = query
     
     const store = useContext(StoreContext)
 
@@ -80,23 +81,23 @@ const LensProfileContextSwitcher = ({ address }: any) => {
 
     useEffect(() => {
         if (isSuccess) {
-            const hasProfile = data.profiles.length > 0
+            const hasProfile = query.data.profiles.length > 0
             if (hasProfile) {
-                console.debug('selectProfile', data.profiles[0])
-                selectProfile(data.profiles[0])
+                console.debug('selectProfile', query.data.profiles[0])
+                selectProfile(query.data.profiles[0])
             }
         }
-    }, [isSuccess, data])
+    }, [isSuccess, query.data, selectProfile])
 
-    if(isLoading || isError) return ''
-    if(!isSuccess) return ''
+    if(isLoading || isError) return <></>
+    if (!isSuccess) return <></>
 
-    const hasProfile = data.profiles.length > 0
+    const hasProfile = query.data.profiles.length > 0
 
     return <>
         {/* {isSuccess && hasProfile && data.profiles.map((profile: any) => <a href={`#`}>@{profile.handle}</a>) } */}
         {isSuccess && hasProfile && <>
-            {`Logged in as `}{ data.profiles.slice(0,1).map((profile: any) => <ProfileHandleInlineLink profile={profile}/>) }{'.'}
+            {`Logged in as `}{query.data.profiles.slice(0,1).map((profile: any) => <ProfileHandleInlineLink key={profile.profileId} profile={profile}/>) }{'.'}
             {/* {` `}{data.profiles.map(profile => profile.handle).join(', ')} */}
         </>}
         {isSuccess && !hasProfile && <>{`No profiles detected`}<a onClick={createProfile}> [create one]</a>{'.\n'}</>}
@@ -105,6 +106,7 @@ const LensProfileContextSwitcher = ({ address }: any) => {
 
 import styles from '../../styles/Home.module.css'
 import WalletConnector from './connector'
+import Image from 'next/image'
 
 export const WalletProfile = () => {
     const [{ data: connectData, error: connectError }, connect] = useConnect()
@@ -134,7 +136,7 @@ export const WalletProfile = () => {
         <div className={styles.walletProfile}>
             {/* <img src={accountData.ens?.avatar || ''} /> */}
 
-            <img className={styles.logo} src="/logo.svg" />
+            <Image className={styles.logo} src="/logo.svg" />
             <pre>
                 {`Anno Terminal [Version 1.0]\n`}
                 {walletInfo}

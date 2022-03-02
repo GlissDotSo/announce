@@ -7,7 +7,7 @@ import { Container, Row } from "react-bootstrap"
 import Link from "next/link"
 
 
-async function getProfiles(ids: string[]) {
+async function getProfiles() {
     const res2 = await fetch(`${ANNONCE_SUBGRAPH_URL}`, {
         method: 'POST',
         headers: {
@@ -53,7 +53,7 @@ const Profiles = () => {
                 <pre>
                     {'\n'}
 
-                    {data.map(profile => renderProfile(profile))}
+                    {data.map((profile: any) => renderProfile(profile))}
 
                     {'\n'}
                 </pre>

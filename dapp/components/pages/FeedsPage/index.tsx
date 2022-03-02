@@ -52,7 +52,7 @@ async function getOwnedFeeds(account: string) {
 
 or: { owner: "${account}" }
 
-async function getYourFeeds(profileId: string, account: string) {
+async function getYourFeeds(profileId: string) {
     const res2 = await fetch(`${ANNONCE_SUBGRAPH_URL}`, {
         method: 'POST',
         headers: {
@@ -95,7 +95,7 @@ async function getYourFeeds(profileId: string, account: string) {
     return res2.data?.feedAuthors.map((feedAuthor: any) => feedAuthor.feed)
 }
 
-async function getFeeds(ids: string[]) {
+async function getFeeds() {
     const res2 = await fetch(`${ANNONCE_SUBGRAPH_URL}`, {
         method: 'POST',
         headers: {
@@ -145,12 +145,21 @@ const Feeds = () => {
 
     const [{ data: accountData }] = useAccount()
     
-    const { isLoading, isSuccess, error, data } = useQuery(`getFeeds`, () => getFeeds())
-    const yourFeedsRes = useQuery([`getYourFeeds`, store.profile?.profileId, accountData?.address], () => getYourFeeds(store.profile?.profileId, accountData?.address.toLowerCase()))
-    const ownedFeedsRes = useQuery([`getOwnedFeeds`, accountData?.address], () => getOwnedFeeds(accountData?.address.toLowerCase()))
-
-    
-    console.log(getOwnedFeeds.data)
+    // const { isLoading, isSuccess, error, data } = useQuery(`getFeeds`, () => getFeeds())
+    const yourFeedsQuery = useQuery(
+        [`getYourFeeds`, store.profile?.profileId], 
+        () => getYourFeeds(store.profile?.profileId),
+        {
+            enabled: store.profile?.profileId !== null
+        }
+    )
+    const ownedFeedsQuery = useQuery(
+        [`getOwnedFeeds`, accountData?.address], 
+        () => getOwnedFeeds(accountData?.address?.toLowerCase() as string),
+        {
+            enabled: accountData?.address !== null
+        }
+    )
 
 
 
@@ -167,7 +176,7 @@ const Feeds = () => {
 
     return <>
         {
-            (isSuccess && ownedFeedsRes.isSuccess && yourFeedsRes.isSuccess) && <>
+            (yourFeedsQuery.isSuccess && ownedFeedsQuery.isSuccess) && <>
                 <pre>
 
                     {'\n'}
@@ -180,14 +189,14 @@ const Feeds = () => {
                     <b>publications you own</b>{'\n'}
                     {"publications you own".split(/./).map(x => '=')}{'\n'}
 
-                    {ownedFeedsRes.data.map(feed => renderFeed(feed))}
+                    {ownedFeedsQuery.data.map((feed: any) => renderFeed(feed))}
                     {'\n'}
                     {'\n'}
 
                     <b>publications you contribute to</b>{'\n'}
                     {"publications you contribute to".split(/./).map(x => '=')}{'\n'}
 
-                    {yourFeedsRes.data.map(feed => renderFeed(feed))}
+                    {yourFeedsQuery.data.map((feed: any) => renderFeed(feed))}
                     {'\n'}
                     {'\n'}
 

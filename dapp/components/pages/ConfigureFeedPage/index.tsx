@@ -105,16 +105,17 @@ async function getFeed(id: string) {
     return data;
 }
 
-const Action = ({ onClick, href = '#', children }) => {
-    return <span href={href} style={{ color: '#00d034', textDecoration: 'none', cursor: "pointer" }} onClick={onClick}>[{children}]</span>
+const Action = ({ onClick, href = '#', children }: any) => {
+    return <span style={{ color: '#00d034', textDecoration: 'none', cursor: "pointer" }} onClick={onClick}>[{children}]</span>
 }
 
 const USERNAME_HANDLE_PATTERN = /[a-z0-9]{1,31}$/
 
 const deployments = require('../../../../deployments/localhost.json')
 
-const ConfigureFeed = ({ id }) => {
-    const { isLoading, isSuccess, error, data } = useQuery(`getFeed-${id}`, () => getFeed(id as string))
+const ConfigureFeed = ({ id }: { id: string }) => {
+    const query = useQuery(`getFeed-${id}`, () => getFeed(id as string))
+    const { isLoading, isSuccess, error } = query
 
     const [usernameInput, setUsernameInput] = useState("")
 
@@ -188,10 +189,10 @@ const ConfigureFeed = ({ id }) => {
                 <pre>
                     {'\n'}
                     {'\n'}
-                    <b>{data.feed.name}</b> {'@'}<ProfileHandleInlineLink profile={data.feed.profile} />{'\n'}
-                    owner: {data.feed.owner}{'\n'}
+                    <b>{query.data.feed.name}</b> {'@'}<ProfileHandleInlineLink profile={query.data.feed.profile} />{'\n'}
+                    owner: {query.data.feed.owner}{'\n'}
                     authors: {'\n'}
-                    {data.feed.authors
+                    {query.data.feed.authors
                         .map((author: any) => {
                             return <>
                                 {'-> '}<ProfileHandleInlineLink profile={author.profile} />{' '}
@@ -199,21 +200,21 @@ const ConfigureFeed = ({ id }) => {
                             </>
                         })
                     }
-                    -> <input type='text' className={styles.textInput} value={usernameInput} onChange={onUsernameInputChange} onKeyDown={onUsernameKeyDown} style={{ width: 180 }} placeholder='profile username'/>{' '}
+                    {'-> '}<input type='text' className={styles.textInput} value={usernameInput} onChange={onUsernameInputChange} onKeyDown={onUsernameKeyDown} style={{ width: 180 }} placeholder='profile username'/>{' '}
                     <Action onClick={addAuthor}>add</Action>{'\n'}
 
                     {/* authors: <Action>add/remove</Action>{'\n'} */}
                     
 
                     {'\n'}
-                    <b>{data.feed.profile.pubCount} posts</b>{'\n'}
+                    <b>{query.data.feed.profile.pubCount} posts</b>{'\n'}
 
                     {/* <b>{data.following.length} following</b>{'\n'}
                     {data.following.map(profile => <ProfileHandleInlineLink profile={profile} />).map(x => <>{x}{`\n`}</>)} */}
 
                     {'\n'}
-                    <b>{data.followers.length} followers</b>{'\n'}
-                    {data.followers.map((profile: any) => <ProfileHandleInlineLink profile={profile} />).map(x => <>{x}{`\n`}</>)}
+                    <b>{query.data.followers.length} followers</b>{'\n'}
+                    {query.data.followers.map((profile: any) => <ProfileHandleInlineLink key={profile.profileId} profile={profile} />).map((x: any) => <>{x}{`\n`}</>)}
                 </pre>
             </>
         }
@@ -228,7 +229,7 @@ function ConfigureFeedPage(args: any) {
     }
 
     return <BaseLayout>
-        <ConfigureFeed id={id} />
+        <ConfigureFeed id={id as string} />
     </BaseLayout>
 }
 

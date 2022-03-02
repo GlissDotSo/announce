@@ -2,7 +2,7 @@ import { makeObservable, observable, computed, action, flow } from "mobx"
 
 export class AppStore {
     // Selected profile.
-    profile = null
+    profile: any = null
 
     constructor() {
         makeObservable(this, {

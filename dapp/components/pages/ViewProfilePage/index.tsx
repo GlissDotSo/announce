@@ -97,13 +97,13 @@ async function getProfile(handle: string) {
     return data;
 }
 
-const ViewProfile = ({ id }) => {
+const ViewProfile = ({ id }: { id: string }) => {
     const { isLoading, isSuccess, error, data } = useQuery(`getProfile-${id}`, () => getProfile(id as string))
     console.log(id, isSuccess, data)
 
     return <>
     {
-        isSuccess && <>
+        (isSuccess && data) && <>
             <pre>
                 {'\n'}
                 {'\n'}
@@ -112,11 +112,11 @@ const ViewProfile = ({ id }) => {
                 {'\n'}
 
                 <b>{data.following.length} following</b>{'\n'}
-                {data.following.map(profile => <ProfileHandleInlineLink profile={profile} />).map(x => <>{x}{`\n`}</>)}
+                {data.following.map((profile: any) => <ProfileHandleInlineLink key={profile.profileId} profile={profile} />).map((x: JSX.Element) => <>{x}{`\n`}</>)}
                 
                 {'\n'}
                 <b>{data.followers.length} followers</b>{'\n'}
-                {data.followers.map(profile => <ProfileHandleInlineLink profile={profile} />).map(x => <>{x}{`\n`}</>)}
+                {data.followers.map((profile: any) => <ProfileHandleInlineLink key={profile.profileId} profile={profile} />).map((x: JSX.Element) => <>{x}{`\n`}</>)}
             </pre>
         </>
     }
@@ -131,7 +131,7 @@ function ViewProfilePage(args: any) {
     }
 
     return <BaseLayout>
-        <ViewProfile id={id}/>
+        <ViewProfile id={id as string}/>
     </BaseLayout>
 }
 
