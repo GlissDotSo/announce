@@ -1,78 +1,66 @@
 {
-  "follow graph": {
-    "address": "0x3AbA87e43D81eb0fd1bD32056B12168004Eb396B",
-    "txHash": ""
-  },
-  "feed": {
-    "address": "0x7f0747c228E085456a07aC869fc1445Da594B471",
-    "txHash": ""
-  },
   "follower only reference module": {
-    "address": "0x75Ef7fbBcAA074a03A0c9fbe66BEe78C345144E1",
+    "address": "0xB5082D5f84EA6Dcb27184B7380B92411818A62B6",
     "txHash": ""
   },
   "approval follow module": {
-    "address": "0xA0F2b20C1C099eB8bd361c010CFEeffAA2252E31",
+    "address": "0x7DE0A9fC8a3ab4EcdBCd8666B9983ab041dcB407",
     "txHash": ""
   },
   "fee follow module": {
-    "address": "0xDDA298764a220a7A5E3D9F24c414454B83D98a7C",
+    "address": "0xBc20957342419BE3449DB77f89DEAdcb95cb32f5",
     "txHash": ""
   },
   "empty collect module": {
-    "address": "0x2A3eB78f97F16774829bcF4A177e8F2521CB35f1",
+    "address": "0xEDeB556d916d9e6E154A083Ac18Da52cc5eD8b1c",
     "txHash": ""
   },
   "revert collect module": {
-    "address": "0x13750116593460D73dE4805aD4FF6fFa4DA8115c",
+    "address": "0xC33Efc049976d0929185F468CE68bAd0753f0068",
     "txHash": ""
   },
   "limited timed fee collect module": {
-    "address": "0x3432B837fE1dECe93eE074a1243Eb6Aab6e7c96C",
+    "address": "0xe7a875bc035FdaABdDA67667B57dDa607Ebf25B6",
     "txHash": ""
   },
   "timed fee collect module": {
-    "address": "0x943f5eA6c743eE5aC0e5114a17A6A7F40269B93f",
+    "address": "0xC99436e87e0aC55BA104245723D302C5E56e6776",
     "txHash": ""
   },
   "limited fee collect module": {
-    "address": "0x71902a4670fbCCa2D0F5B4C3E55F7Fd2aa4344F8",
+    "address": "0xa32a0D9BAb649dE02De63B6b55FDB13FeE38D5ae",
     "txHash": ""
   },
   "fee collect module": {
-    "address": "0x2c6554552FFc75945929A0D93D2240B85bECBAaA",
+    "address": "0x78B307d9bBF0Be3af93C57D0c9ac1fC8Da068edE",
     "txHash": ""
   },
   "module globals": {
-    "address": "0x358BcA878047b4641D239d98969d45b720503FB2",
-    "txHash": ""
-  },
-  "currency": {
-    "address": "0x37f07475597752d28547154a23ac0a0201126796",
+    "address": "0xB39d1a0BB7515bc19621088103F3c4C9fC328e21",
     "txHash": ""
   },
   "collect NFT impl": {
-    "address": "0x31d1e26eff82356c0d618b105e5ecc85d41f2ad5",
+    "address": "0x51063D3A1c677b6B02FA2b478799F9D160894cCB",
     "txHash": ""
   },
   "follow NFT impl": {
-    "address": "0x063dade9365ba831b0d004e143ad7073f9fa4a35",
-    "txHash": "0xce01565abb52932c42a64066a3578d22b5fbc73fe5b6e5975f32bd7dd2698f91"
+    "address": "0xB7141BA444bEf189Cdf8CeF52F8DaBAB3bFCFB69",
+    "txHash": "0xcb6b626a039e1bd91615bd76f2328ab8a2d8989fde519272bdb94a5603bb1cb5"
   },
   "interaction logic lib": {
-    "address": "0x0372e8Bcc08e87EeB5Ac63Ac5eFaf35895d75e9D",
+    "address": "0x28CE33b49EC8836Aa6f0199Cf764B82b9BEDb5ea",
     "txHash": ""
   },
   "publishing logic lib": {
-    "address": "0x73fEbaf2dE909D9E15a6b39934D3133A513C782B",
+    "address": "0xBFe82126B2f18918842dBE03D5d81A7B35B69821",
     "txHash": ""
   },
   "lensHub impl": {
-    "address": "0xAB622CEAB92Bdd41F97998a2A81cB6721fD45c74",
-    "txHash": "0xc42aec3b3a2d5ae6eece568476b499d99ee483505ef700233ba8bf1be1eb747b"
+    "address": "0x4F0c856b2FA2c1e0E1AC971B462FCCF4654E8045",
+    "txHash": "0xd4343d475b7591c08dd4ffeed12323443e83b226880b30d5c949f36ba0162e66"
   },
   "lensHub proxy": {
-    "address": "0x2076880a8c5522A7EbeF42aDf781bAA744263E4E",
-    "txHash": "0xb2e6578aa54144eec6285ab0a2fcd7c6230dc719c6392f00d514cbde8dc866d3"
+    "address": "0xF6BF84E5df229029C9D36dC7ABaCDBE9c0bd7b4F",
+    "txHash": "0x0fd185c7a96f0d95824e24ae8d0587858ccbb924680765f53db260e38ca70997"
   }
 }
