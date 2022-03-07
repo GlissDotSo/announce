@@ -1,17 +1,3 @@
-
-type Inbox @entity {
-  id: ID!
-  user: User!
-  items: [InboxItem!]! @derivedFrom(field: "inbox")
-  # read: [FeedPub!]!
-}
-
-type InboxItem @entity {
-  id: ID!
-  inbox: Inbox!
-  item: FeedPub!
-}
-
 type FeedPub @entity {
   id: ID!
   feed: Feed!
@@ -38,7 +24,6 @@ type FeedAuthor @entity {
 
 type User @entity {
   id: ID!
-  inbox: Inbox!
   profile: Profile!
 }
 
@@ -115,11 +100,6 @@ type Mirror @entity {
   referenceModule: Bytes!
   referenceModuleReturnData: Bytes!
   timestamp: BigInt!
-}
-
-type SocialGraph @entity {
-  id: ID! # address
-  following: [Profile!]!
 }
 
 type ProfileCreatorWhitelist @entity {

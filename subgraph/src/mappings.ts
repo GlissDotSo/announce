@@ -16,7 +16,7 @@ import {
     FollowNFTDeployed
 } from "../generated/LensHub/LensHub"
 import { FeedCreated, PostToFeedCreated, FeedProfilePermissionsSet, Feed as FeedContract } from '../generated/Feed/Feed'
-import { Comment, FeedAuthor, Post, FollowingEdge, Profile, SocialGraph, FollowNFT, FollowNFTContract as FollowNFTContractEntity, ProfileCreatorWhitelist, CollectModuleWhitelist, FollowModuleWhitelist, ReferenceModuleWhitelist, Mirror, User, Inbox, Feed, FeedPub } from "../generated/schema"
+import { Comment, FeedAuthor, Post, FollowingEdge, Profile, FollowNFT, FollowNFTContract as FollowNFTContractEntity, ProfileCreatorWhitelist, CollectModuleWhitelist, FollowModuleWhitelist, ReferenceModuleWhitelist, Mirror, User, Feed, FeedPub } from "../generated/schema"
 import { FollowNFT as FollowNFTContract } from '../generated/templates'
 import { store } from '@graphprotocol/graph-ts'
 import { ipfs } from '@graphprotocol/graph-ts'
@@ -48,12 +48,6 @@ export function handleProfileCreated(event: ProfileCreated): void {
 
     // Create a User for this profile.
     let user = new User(event.params.profileId.toString());
-
-    let inbox = new Inbox(event.params.profileId.toString());
-    inbox.user = user.id;
-    inbox.save();
-
-    user.inbox = inbox.id;
     user.profile = entity.id;
     user.save();
 };

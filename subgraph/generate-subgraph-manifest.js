@@ -298,6 +298,8 @@ function main() {
             {
                 name: "Feed",
                 type: "data-source",
+                useAddressOf: 'FeedProxy',
+                useStartBlockOf: 'FeedProxy',
                 file: './src/mappings.ts',
                 eventHandlers: [
                     { event: 'FeedCreated(indexed uint256,indexed uint256,indexed address)' },
