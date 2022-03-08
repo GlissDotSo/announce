@@ -1,6 +1,5 @@
 // Environment variables.
-
-import { Deployments } from '../../deployer-tooling/deployments'
+import { Deployments } from '../../lens-protocol/tasks/helpers/deployments'
 
 const ANNONCE_SUBGRAPH_URL = process.env.NEXT_PUBLIC_ANNONCE_SUBGRAPH_URL
 const IPFS_NODE_URI = process.env.NEXT_PUBLIC_IPFS_NODE_URI
