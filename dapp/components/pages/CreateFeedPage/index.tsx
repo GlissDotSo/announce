@@ -62,7 +62,7 @@ const CreateFeed = () => {
 
         const receipt = await tx.wait(1)
 
-        let abi = deployments.contracts['Feed'].abi;
+        let abi = deployments.contracts['FeedProxy'].abi;
         let iface = new ethers.utils.Interface(abi);
         let log = iface.parseLog(receipt.logs[2]);
         const { feedId } = log.args;

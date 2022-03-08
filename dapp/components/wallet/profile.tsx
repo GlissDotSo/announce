@@ -141,11 +141,13 @@ const LensProfileContextSwitcher = ({ address }: any) => {
         await write({ args: createProfileData })
     }
 
-    function selectProfile(profile: any) {
-        store.setProfile(profile)
-    }
+    
 
     useEffect(() => {
+        function selectProfile(profile: any) {
+            store.setProfile(profile)
+        }
+
         if (isSuccess) {
             const hasProfile = query.data.profiles.length > 0
             if (hasProfile) {
@@ -153,7 +155,7 @@ const LensProfileContextSwitcher = ({ address }: any) => {
                 selectProfile(query.data.profiles[0])
             }
         }
-    }, [isSuccess, query.data, selectProfile])
+    }, [isSuccess, query.data])
 
     if(isLoading || isError) return <></>
     if (!isSuccess) return <></>
@@ -206,7 +208,7 @@ export const WalletProfile = () => {
         <div className={styles.walletProfile}>
             {/* <img src={accountData.ens?.avatar || ''} /> */}
 
-            <img className={styles.logo} src="/logo.svg" />
+            <img className={styles.logo} alt="logo" src="/logo.svg" />
             <pre>
                 {`Anno Terminal [Version 1.0]\n`}
                 {walletInfo}

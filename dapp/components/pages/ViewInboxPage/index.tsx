@@ -240,7 +240,7 @@ const ViewInboxPage = () => {
             // </>)
 
             // Show feedPubs.
-            data && data.map((x: any) => <Item {...x}/>)
+            data && data.map((x: any, i: number) => <Item key={i} {...x}/>)
         }
     </>
 }

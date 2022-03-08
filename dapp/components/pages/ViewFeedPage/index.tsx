@@ -315,7 +315,7 @@ const ViewFeed = observer(({ id }: { id: string }) => {
                     <button onClick={() => createPost(textareaContent)}>post</button>{'\n'}{'\n'}
                     </>}
 
-                    {data.feed.feedPubs.map((x: any) => <Item {...x}/>)}
+                    {data.feed.feedPubs.map((x: any, i: number) => <Item key={i} {...x}/>)}
 
 
                     {/* <b>{data.following.length} following</b>{'\n'}
