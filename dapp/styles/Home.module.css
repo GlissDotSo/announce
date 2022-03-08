@@ -78,6 +78,18 @@
   outline: none;
 }
 
+.inlineAction {
+  color: #00d034;
+  text-decoration: 'none'; 
+  cursor: pointer;
+}
+
+.inlineAction:hover {
+  color: #00e038;
+  cursor: pointer;
+}
+
+
 /* OLD NEXT STARTER STUFF. */
 
 .footer {

@@ -107,7 +107,7 @@ async function getFeed(id: string) {
 }
 
 const Action = ({ onClick, href = '#', children }: any) => {
-    return <span style={{ color: '#00d034', textDecoration: 'none', cursor: "pointer" }} onClick={onClick}>[{children}]</span>
+    return <span className={styles.inlineAction} onClick={onClick}>[{children}]</span>
 }
 
 const USERNAME_HANDLE_PATTERN = /[a-z0-9]{1,31}$/
