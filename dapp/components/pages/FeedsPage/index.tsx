@@ -20,7 +20,7 @@ async function getOwnedFeeds(account: string) {
         body: JSON.stringify({
             query: `
                 {
-                    feeds(filter: {
+                    feeds(where: {
                         owner: "${account}"
                     }) {
                         id,
@@ -63,8 +63,8 @@ async function getYourFeeds(profileId: string) {
         body: JSON.stringify({
             query: `
                 {
-                    feedAuthors(filter: { 
-                        author_in: ["${profileId}"]
+                    feedAuthors(where: {
+                        profile_in: ${JSON.stringify([profileId])}
                     }) {
                         id,
                         feed {
@@ -150,14 +150,14 @@ const Feeds = () => {
         [`getYourFeeds`, store.profile?.profileId], 
         () => getYourFeeds(store.profile?.profileId),
         {
-            enabled: store.profile?.profileId !== null
+            enabled: !!store.profile?.profileId
         }
     )
     const ownedFeedsQuery = useQuery(
         [`getOwnedFeeds`, accountData?.address], 
         () => getOwnedFeeds(accountData?.address?.toLowerCase() as string),
         {
-            enabled: accountData?.address !== null
+            enabled: !!accountData?.address
         }
     )
 
