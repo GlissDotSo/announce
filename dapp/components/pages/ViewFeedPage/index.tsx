@@ -1,7 +1,7 @@
 import { BaseLayout } from "../../layouts"
 import { useRouter } from 'next/router'
 import { useQuery } from "react-query"
-import { ANNONCE_SUBGRAPH_URL } from "../../../config"
+import { ANNONCE_SUBGRAPH_URL, IPFS_NODE_URI } from "../../../config"
 import { Action, ProfileHandleInlineLink, ShortenedAddy } from "../../utils"
 import styles from '../../../styles/Home.module.css'
 
@@ -160,17 +160,36 @@ async function getFeed(id: string, fromProfileId: string) {
 
 
 const Item = ({ id, author, pub }: any) => {
+    // TODO: Load from IPFS.
+    const [content, setContent] = useState('')
+    
+    const cid = pub.contentURI.split('ipfs:')[1]
+    const ipfsUrl = `${IPFS_NODE_URI}/ipfs/${cid}`
+
+    async function loadFromIpfs() {
+        const res = await fetch(ipfsUrl)
+        setContent(await res.text())
+    }
+
+    useEffect(() => {    
+        if (!pub.content && !content) {
+            loadFromIpfs();
+        }
+    }, [])
+
     return <pre key={id}>
         <b>
             {`@`}<ProfileHandleInlineLink profile={author} />
             {`\n`}
         </b>
 
+        <a href={ipfsUrl}>
         {spotifyStyleTime(new Date(pub.timestamp * 1000))}
         {` ago`}
+        </a>
         {`\n`}
 
-        {`${pub.content || "Available at " + pub.contentURI}`}
+        {`${pub.content || content}`}
     </pre>
 }
 
@@ -201,8 +220,8 @@ const ViewFeed = observer(({ id }: { id: string }) => {
     )
     const feedContract = useContract(
         {
-            addressOrName: deployments.contracts['Feed'].address,
-            contractInterface: deployments.contracts['Feed'].abi,
+            addressOrName: deployments.contracts['FeedProxy'].address,
+            contractInterface: deployments.contracts['FeedProxy'].abi,
             signerOrProvider: signerData
         }
     )
@@ -253,9 +272,9 @@ const ViewFeed = observer(({ id }: { id: string }) => {
             contentURI: `ipfs:${upload.cid}`,
 
             // TODO: Future design decisions about these variables.
-            collectModule: lensAddresses['empty collect module'],
+            collectModule: lensAddresses['empty collect module'].address,
             collectModuleData: [],
-            referenceModule: lensAddresses['follower only reference module'],
+            referenceModule: lensAddresses['follower only reference module'].address,
             referenceModuleData: [],
         }
 
@@ -296,7 +315,7 @@ const ViewFeed = observer(({ id }: { id: string }) => {
                     <button onClick={() => createPost(textareaContent)}>post</button>{'\n'}{'\n'}
                     </>}
 
-                    {data.feed.feedPubs.map(Item)}
+                    {data.feed.feedPubs.map((x: any) => <Item {...x}/>)}
 
 
                     {/* <b>{data.following.length} following</b>{'\n'}

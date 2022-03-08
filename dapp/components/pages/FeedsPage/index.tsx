@@ -170,7 +170,7 @@ const Feeds = () => {
             
             {/* <b>{feed.name}</b> {'@'}<ProfileHandleInlineLink profile={feed.profile} />{'\n'} */}
             <FeedInlineLink feed={feed} />{'\n'}
-            <b>{feed.profile.followersCount} followers</b> &middot; <b>{feed.profile.pubCount.length} posts</b>{'\n'}
+            <b>{feed.profile.followersCount} followers</b> &middot; <b>{feed.profile.pubCount} posts</b>{'\n'}
         </pre>
     }
 

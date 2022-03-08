@@ -31,8 +31,8 @@ const CreateFeed = () => {
     )
     const feedContract = useContract(
         {
-            addressOrName: deployments.contracts['Feed'].address,
-            contractInterface: deployments.contracts['Feed'].abi,
+            addressOrName: deployments.contracts['FeedProxy'].address,
+            contractInterface: deployments.contracts['FeedProxy'].abi,
             signerOrProvider: signerData
         }
     )
@@ -46,8 +46,8 @@ const CreateFeed = () => {
 
         const createFeedVars = {
             name,
-            owner,
             profileHandle,
+            owner,
             imageURI: "",
             followModule: ZERO_ADDRESS,
             followModuleData: [],

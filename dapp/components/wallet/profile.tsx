@@ -1,8 +1,8 @@
 import { ethers } from 'ethers'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { isError, useQuery } from 'react-query'
-import { useAccount, useConnect, useContractWrite } from 'wagmi'
-import { ANNONCE_SUBGRAPH_URL } from '../../config'
+import { useAccount, useConnect, useContractWrite, useNetwork } from 'wagmi'
+import { ANNONCE_SUBGRAPH_URL, IPFS_NODE_URI } from '../../config'
 import { StoreContext } from '../../providers/wagmi'
 import { ProfileHandleInlineLink, ShortenedAddy } from '../utils'
 
@@ -44,19 +44,88 @@ function makeRandomId(length: number): string {
     return result;
 }
 
+function useLensCreateProfileContract(network: string, deployments: any) {
+    let addressOrName
+    let contractInterface
+    let functionName
+
+    if(network == 'Mumbai') {
+        const MockProfileCreationProxy_address = '0x08C4fdC3BfF03ce4E284FBFE61ba820c23722540'
+        addressOrName = MockProfileCreationProxy_address
+        contractInterface = MockProfileProxyABI
+        functionName = 'proxyCreateProfile'
+    } else {
+        addressOrName = deployments.contracts['LensHubProxy'].address
+        contractInterface = deployments.contracts['LensHubProxy'].abi
+        functionName = 'createProfile'
+    }
+
+    return useContractWrite(
+        {
+            addressOrName,
+            contractInterface,
+        },
+        functionName
+    )
+}
+
+const MockProfileProxyABI = [
+    {
+        "inputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "handle",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "imageURI",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "followModule",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes",
+                        "name": "followModuleData",
+                        "type": "bytes"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "followNFTURI",
+                        "type": "string"
+                    }
+                ],
+                "internalType": "struct DataTypes.CreateProfileData",
+                "name": "vars",
+                "type": "tuple"
+            }
+        ],
+        "name": "proxyCreateProfile",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]
+
 const LensProfileContextSwitcher = ({ address }: any) => {
     const query = useQuery('get-profiles-for-wallet', () => getProfilesForWallet(address))
     const { isLoading, isError, isSuccess, error, data } = query
     
     const store = useContext(StoreContext)
     const [{ deployments }] = useDeployments()
-    const [{ data: txData, error: txErr, loading }, write] = useContractWrite(
-        {
-            addressOrName: deployments.contracts['LensHubProxy'].address,
-            contractInterface: deployments.contracts['LensHubProxy'].abi,
-        },
-        'createProfile',
-    )
+    const [{ data: networkData }, switchNetwork] = useNetwork()
+    
+    const [{ data: txData, error: txErr, loading }, write] = useLensCreateProfileContract(networkData.chain?.name as string, deployments)
 
     async function createProfile() {
         const createProfileData = {
@@ -111,6 +180,7 @@ export const WalletProfile = () => {
     const [{ data: accountData }, disconnect] = useAccount({
         fetchEns: true,
     })
+    const [{ data, error, loading }, switchNetwork] = useNetwork()
 
     // {
     //     accountData.ens?.name
@@ -118,9 +188,9 @@ export const WalletProfile = () => {
     //     : accountData.address
     // }
     let walletInfo
-    if(accountData) {
+    if (accountData && data.chain) {
         walletInfo = <>
-            { `Connected to wallet ` }<ShortenedAddy addr={accountData.address} />{ '.\n' }
+            {`Connected to wallet `}<ShortenedAddy addr={accountData.address} />{`.\n` }
             <LensProfileContextSwitcher address={accountData.address} />
         </>
     } else {
@@ -129,6 +199,8 @@ export const WalletProfile = () => {
             <WalletConnector />
         </>
     }
+
+    const [showDebugInfo, setShowDebugInfo] = useState(false)
 
     return (
         <div className={styles.walletProfile}>
@@ -140,10 +212,19 @@ export const WalletProfile = () => {
                 {walletInfo}
             </pre>
 
-            <pre>
-                <span className={styles.online}></span>{` Blockchain Node\n`}
-                <span className={styles.online}></span>{` Indexer Node\n`}
-                <i className={styles.online}></i>{` IPFS Node\n`}
+            <pre onClick={() => setShowDebugInfo(!showDebugInfo)}>
+                { showDebugInfo 
+                    ? <>
+                        <span className={styles.online}></span>{` Blockchain Node (${data.chain?.name})\n`}
+                        <span className={styles.online}></span>{` Indexer - ${ANNONCE_SUBGRAPH_URL}\n`}
+                        <i className={styles.online}></i>{` IPFS Node - ${IPFS_NODE_URI}\n`}
+                    </>
+                    : <>
+                        <span className={styles.online}></span>{` Blockchain Node\n`}
+                        <span className={styles.online}></span>{` Indexer Node\n`}
+                        <i className={styles.online}></i>{` IPFS Node\n`}
+                    </>
+                }
             </pre>
             {/* <div>Connected to {accountData?.connector?.name}</div> */}
             {/* <button onClick={disconnect}>Disconnect</button> */}

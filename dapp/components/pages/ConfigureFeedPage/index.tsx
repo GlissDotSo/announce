@@ -129,8 +129,8 @@ const ConfigureFeed = ({ id }: { id: string }) => {
     )
     const feedContract = useContract(
         {
-            addressOrName: deployments.contracts['Feed'].address,
-            contractInterface: deployments.contracts['Feed'].abi,
+            addressOrName: deployments.contracts['FeedProxy'].address,
+            contractInterface: deployments.contracts['FeedProxy'].abi,
             signerOrProvider: signerData
         }
     )
