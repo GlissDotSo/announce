@@ -69,7 +69,7 @@ async function getIsFollowing(profileId: string, fromProfileId: string): Promise
 
 }
 
-async function getFeed(id: string, fromProfileId: string) {
+async function getFeed(id: string, fromProfileId: string | undefined) {
     console.log('fromProfile', fromProfileId)
     // TODO: validate args
 
@@ -201,8 +201,7 @@ const ViewFeed = observer(({ id }: { id: string }) => {
     // const { isLoading, isError, isSuccess, error, data } = useQuery('get-profiles-for-wallet', () => getProfilesForWallet(address))
     const { isLoading, isSuccess, error, data } = useQuery(
         [`getFeed`,id,store.profile], 
-        () => getFeed(id, store?.profile?.profileId),
-        { enabled: !!store?.profile?.profileId }
+        () => getFeed(id, store?.profile?.profileId)
     )
 
     const [{ data: accountData }] = useAccount()
