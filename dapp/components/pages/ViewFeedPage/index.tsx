@@ -50,6 +50,7 @@ async function getIsFollowing(profileId: string, fromProfileId: string): Promise
                         id
                     }
                 }`
+    
     const res2 = await fetch(`${ANNONCE_SUBGRAPH_URL}`, {
         method: 'POST',
         headers: {
@@ -198,7 +199,11 @@ const ViewFeed = observer(({ id }: { id: string }) => {
     const store = useContext(StoreContext)
 
     // const { isLoading, isError, isSuccess, error, data } = useQuery('get-profiles-for-wallet', () => getProfilesForWallet(address))
-    const { isLoading, isSuccess, error, data } = useQuery([`getFeed`,id,store.profile], () => getFeed(id, store?.profile?.profileId))
+    const { isLoading, isSuccess, error, data } = useQuery(
+        [`getFeed`,id,store.profile], 
+        () => getFeed(id, store?.profile?.profileId),
+        { enabled: !!store?.profile?.profileId }
+    )
 
     const [{ data: accountData }] = useAccount()
     const [{ deployments, lensAddresses }] = useDeployments()
