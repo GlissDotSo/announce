@@ -5,14 +5,14 @@ import { useNetwork } from 'wagmi'
 export const useDeployments = () => {
     const [{ data, error, loading }, switchNetwork] = useNetwork()
     // TODO: this isn't the best solution.
-    const network = data.chain?.name || 'Localhost'
+    const network = data.chain?.name || ''
 
     const lookup: Record<string,string> = {
         'Mumbai': 'mumbai',
         'Hardhat': 'localhost',
         'Localhost': 'localhost'
     }
-    const deploymentKey = lookup[network]
+    const deploymentKey = lookup[network] || 'localhost'
     
     const ctx = {
         deployments: deployments[deploymentKey],
@@ -21,6 +21,7 @@ export const useDeployments = () => {
     return [ctx]
 }
 
+// TODO: import this data from chainlist.
 const CHAINS = {
     'mumbai': {
         chainId: 80001,

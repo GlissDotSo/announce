@@ -8,30 +8,38 @@ import { WalletLinkConnector } from 'wagmi/connectors/walletLink'
 const infuraId = process.env.INFURA_ID
 
 // Chains for connectors to support
-const chains = allChains
+const supportedChains = [
+    chain.polygonTestnetMumbai,
+    chain.hardhat,
+    chain.localhost
+]
 
 // Set up connectors
 const connectors = ({ chainId }: { chainId?: number | undefined }) => {
-    const rpcUrl =
-        chains.find((x) => x.id === chainId)?.rpcUrls?.[0] ??
-        chain.mainnet.rpcUrls[0]
+    // WalletLink support code:
+    // const rpcUrl =
+    //     supportedChains.find((x) => x.id === chainId)?.rpcUrls?.[0]
+    // if(!rpcUrl) throw new Error(`RPC URL not found for chain ${chainId}`)
+
     return [
         new InjectedConnector({
-            chains,
+            chains: supportedChains,
             options: { shimDisconnect: true },
         }),
         new WalletConnectConnector({
+            chains: supportedChains,
             options: {
                 infuraId,
                 qrcode: true,
             },
         }),
-        new WalletLinkConnector({
-            options: {
-                appName: 'My wagmi app',
-                jsonRpcUrl: `${rpcUrl}/${infuraId}`,
-            },
-        }),
+        // new WalletLinkConnector({
+        //     chains: supportedChains,
+        //     options: {
+        //         appName: 'My wagmi app',
+        //         jsonRpcUrl: `${rpcUrl}/${infuraId}`,
+        //     },
+        // }),
     ]
 }
 

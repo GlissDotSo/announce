@@ -191,10 +191,17 @@ export const WalletProfile = () => {
     // }
     let walletInfo
     if (accountData && data.chain) {
-        walletInfo = <>
-            {`Connected to wallet `}<ShortenedAddy addr={accountData.address} />{`.\n` }
-            <LensProfileContextSwitcher address={accountData.address} />
-        </>
+        if (data.chain.unsupported) {
+            walletInfo = <>
+                {`Please swap network to Polygon Mumbai.`}
+            </>
+        } else {
+            walletInfo = <>
+                {`Connected to wallet `}<ShortenedAddy addr={accountData.address} />{`.\n`}
+                <LensProfileContextSwitcher address={accountData.address} />
+            </>
+        }
+        
     } else {
         walletInfo = <>
             {`No wallet connected.`}

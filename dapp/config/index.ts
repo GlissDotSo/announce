@@ -8,6 +8,11 @@ Object.entries({ ANNONCE_SUBGRAPH_URL, IPFS_NODE_URI }).map(([ k, v ]) => {
     if(!v) throw new Error(`Environment variable NEXT_PUBLIC_${k} not defined`)
 })
 
+// NOTE:
+// Do NOT remove "localhost" as an entry here.
+// As it is used in the useDeployments hook as a fallback default.
+// TODO: this should be improved.
+
 const deployments: Record<string, Deployments> = {
     'localhost': require('../../deployments/localhost/anno.json'),
     'mumbai': require('../../deployments/mumbai/anno.json')
