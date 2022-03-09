@@ -1,4 +1,4 @@
-import { Entity, store } from "@graphprotocol/graph-ts";
+import { Entity, store, BigInt } from "@graphprotocol/graph-ts";
 import {
     FollowEdgeChanged
 } from "../generated/FollowGraph/FollowGraph"
@@ -6,50 +6,31 @@ import { FollowingEdge, Profile } from "../generated/schema";
 
 const DELETE = false
 const CREATE = true
+
 export function handleFollowEdgeChanged(event: FollowEdgeChanged): void {
     const fromProfileId = event.params.fromProfileId;
     const toProfileId = event.params.toProfileId;
     const deleteOrCreate = event.params.deleteOrCreate;
 
+    if (deleteOrCreate == DELETE) {
+        processUnfollow(fromProfileId, toProfileId);
+    } else if(deleteOrCreate == CREATE) {
+        processFollow(fromProfileId, toProfileId);
+    }
+}
+
+function getFollowEdgeId(fromProfileId: BigInt, toProfileId: BigInt): string {
     let edgeId = ""
         .concat(fromProfileId.toString())
         .concat("_")
         .concat(toProfileId.toString());
-    
-    // 
-    // TODO: refactor below into processFollow
-    // 
+    return edgeId;
+}
 
-    if (deleteOrCreate == DELETE) {
-        if (store.get('FollowingEdge', edgeId)) {
-            store.remove('FollowingEdge', edgeId);
-        }
-
-        // TODO: decrement somewhere.
-        // TODO: proper null checks
-        const fromProfile = Profile.load(fromProfileId.toString());
-        if (fromProfile != null) {
-            fromProfile.followingCount = fromProfile.followingCount - 1;
-            fromProfile.save();
-        }
-
-        const toProfile = Profile.load(toProfileId.toString());
-        if (toProfile != null) {
-            toProfile.followersCount = toProfile.followersCount - 1;
-            toProfile.save();
-        }
-
-        return;
-    }
-
-
-    // 
-    // TODO: refactor below into processUnfollow
-    // 
-
+function processFollow(fromProfileId: BigInt, toProfileId: BigInt): void {
+    const edgeId = getFollowEdgeId(fromProfileId, toProfileId);
     let edge = FollowingEdge.load(edgeId);
 
-    // TODO: Verify if Lens processes follows only once.
     if (edge == null) {
 
         edge = new FollowingEdge(edgeId);
@@ -57,7 +38,6 @@ export function handleFollowEdgeChanged(event: FollowEdgeChanged): void {
         edge.to = toProfileId.toString();
         edge.save();
 
-        // TODO: decrement somewhere.
         // TODO: proper null checks
         const fromProfile = Profile.load(fromProfileId.toString());
         if (fromProfile != null) {
@@ -76,8 +56,26 @@ export function handleFollowEdgeChanged(event: FollowEdgeChanged): void {
     }
 }
 
-function processFollow(): void {}
-function processUnfollow(): void {}
+function processUnfollow(fromProfileId: BigInt, toProfileId: BigInt): void {
+    const edgeId = getFollowEdgeId(fromProfileId, toProfileId);
+
+    if (store.get('FollowingEdge', edgeId)) {
+        store.remove('FollowingEdge', edgeId);
+    }
+
+    // TODO: proper null checks
+    const fromProfile = Profile.load(fromProfileId.toString());
+    if (fromProfile != null) {
+        fromProfile.followingCount = fromProfile.followingCount - 1;
+        fromProfile.save();
+    }
+
+    const toProfile = Profile.load(toProfileId.toString());
+    if (toProfile != null) {
+        toProfile.followersCount = toProfile.followersCount - 1;
+        toProfile.save();
+    }
+}
 
 function verifyProfileExists(id: string): void {
     if (Profile.load(id) == null) {
