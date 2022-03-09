@@ -6,7 +6,7 @@ import { Action, LensUsernameInput, ProfileHandleInlineLink } from "../../utils"
 import { Container, Row } from "react-bootstrap"
 import Link from "next/link"
 import styles from '../../../styles/Home.module.css'
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAccount, useContract, useSigner } from "wagmi"
 import { ethers } from "ethers"
 import { useDeployments } from "../../../hooks"
@@ -69,6 +69,13 @@ const CreateFeed = () => {
 
         router.push(`/publications/${feedId.toString()}`)
     }
+
+    const [usernameExists, setUsernameExists] = useState(false)
+    const [canCreateFeed, setCanCreateFeed] = useState(false)
+    useEffect(() => {
+        const formValid = feedName != '' && usernameInput != '' && !usernameExists
+        setCanCreateFeed(formValid)
+    }, [feedName, usernameExists])
     
     return <>
         {
@@ -81,9 +88,9 @@ const CreateFeed = () => {
                 <input type='text' value={feedName} onChange={(ev) => setFeedName(ev.target.value)} placeholder="Announcements" style={{ width: 250 }} className={styles.textInput} />{'\n'}{'\n'}
 
                 username:{'\n'}
-                <LensUsernameInput value={usernameInput} onChange={setUsernameInput} />{'\n'}{'\n'}
+                <LensUsernameInput value={usernameInput} handleUsernameExists={setUsernameExists} errorOn='exists' onChange={setUsernameInput} />{'\n'}{'\n'}
 
-                <Action onClick={createFeed}>create</Action>
+                <Action disabled={!canCreateFeed} onClick={createFeed}>create</Action>
 
                 {'\n'}
             </pre>

@@ -2,7 +2,7 @@ import { BaseLayout } from "../../layouts"
 import { useRouter } from 'next/router'
 import { useQuery } from "react-query"
 import { ANNONCE_SUBGRAPH_URL } from "../../../config"
-import { ProfileHandleInlineLink } from "../../utils"
+import { LensUsernameInput, ProfileHandleInlineLink } from "../../utils"
 import { useState } from "react"
 import { useContract, useSigner } from "wagmi"
 import styles from '../../../styles/Home.module.css'
@@ -117,6 +117,7 @@ const ConfigureFeed = ({ id }: { id: string }) => {
     const { isLoading, isSuccess, error } = query
 
     const [usernameInput, setUsernameInput] = useState("")
+    const [usernameExists, setUsernameExists] = useState(false)
     const [{ deployments }] = useDeployments()
 
     const [{ data: signerData, error: signerError, loading }, getSigner] = useSigner()
@@ -174,15 +175,6 @@ const ConfigureFeed = ({ id }: { id: string }) => {
         }
     }
 
-    function onUsernameInputChange(ev: any) {
-        let { value } = ev.target
-        // console.log(USERNAME_HANDLE_PATTERN.exec(value), USERNAME_HANDLE_PATTERN.test(value))
-        // if (USERNAME_HANDLE_PATTERN.test(value)) {
-            
-        // }
-        setUsernameInput(value)
-    }
-
     return <>
         {
             isSuccess && <>
@@ -200,7 +192,9 @@ const ConfigureFeed = ({ id }: { id: string }) => {
                             </>
                         })
                     }
-                    {'-> '}<input type='text' className={styles.textInput} value={usernameInput} onChange={onUsernameInputChange} onKeyDown={onUsernameKeyDown} style={{ width: 180 }} placeholder='profile username'/>{' '}
+                    {'-> '}
+                    <LensUsernameInput value={usernameInput} handleUsernameExists={setUsernameExists} errorOn='not-exists' onChange={setUsernameInput} />
+                    {' '}
                     <Action onClick={addAuthor}>add</Action>{'\n'}
 
                     {/* authors: <Action>add/remove</Action>{'\n'} */}
