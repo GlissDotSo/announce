@@ -131,7 +131,7 @@ const ViewProfile = ({ id }: { id: string }) => {
                 {'\n'}
                 {'@'}<ProfileHandleInlineLink profile={data.profile} />{'\n'}
                 {`owned by ${data.profile.owner}\n`}
-                <Link href={`/inbox/by-profile/${data.profile.profileId}`}>view inbox</Link>{'\n'}
+                <Link href={`/inbox/by-profile/${data.profile.handle}`}>view inbox</Link>{'\n'}
                 {'\n'}
 
                 <b>{data.following.length} following</b>{'\n'}

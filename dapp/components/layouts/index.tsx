@@ -35,7 +35,7 @@ const BaseLayout = ({ children }: { children: any }) => {
             <Nav variant="pills" defaultActiveKey="/">
                 <Nav.Item>
                     <Link href="/">
-                    <Nav.Link active={router.pathname === '/'} href='/'>
+                    <Nav.Link active={router.pathname === '/' || router.pathname.startsWith('/inbox')} href='/'>
                         Inbox
                     </Nav.Link>
                     </Link>
