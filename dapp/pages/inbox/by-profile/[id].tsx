@@ -1,3 +1,3 @@
-export default function Swag() {
-    return <>null</>
-}
+import ViewInboxPage from "../../../components/pages/ViewInboxPage";
+
+export default ViewInboxPage

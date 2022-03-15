@@ -75,7 +75,7 @@ const CreateFeed = () => {
     useEffect(() => {
         const formValid = feedName != '' && usernameInput != '' && !usernameExists
         setCanCreateFeed(formValid)
-    }, [feedName, usernameExists])
+    }, [feedName, usernameExists, usernameInput])
     
     return <>
         {

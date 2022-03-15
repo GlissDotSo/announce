@@ -176,7 +176,7 @@ const Item = ({ id, author, pub }: any) => {
         if (!pub.content && !content) {
             loadFromIpfs();
         }
-    }, [])
+    }, [content, pub.content, loadFromIpfs])
 
     return <pre key={id}>
         <b>

@@ -91,8 +91,8 @@ async function getProfile(handle: string) {
     // 
     const following = profile.following
     const followers = profile.followers
-    let followingProfiles = []
-    let followersProfiles = []
+    let followingProfiles: any[] = []
+    let followersProfiles: any[] = []
 
     if (following.length > 0) {
         const followingProfileIds = following.map((edge: any) => edge.to.id)
@@ -114,7 +114,7 @@ async function getProfile(handle: string) {
 
 export const SmartInlineProfileHandleLink = ({ profile }: any) => {
     if(profile.feedId) {
-        return <Link href={`/publications/${profile.feedId}`}>{profile.handle}</Link>
+        return <><Link href={`/publications/${profile.feedId}`}>{`${profile.handle} (pub)`}</Link></>
     }
     return <Link href={`/profiles/${profile.handle}`}>{profile.handle}</Link>
 }
@@ -131,6 +131,7 @@ const ViewProfile = ({ id }: { id: string }) => {
                 {'\n'}
                 {'@'}<ProfileHandleInlineLink profile={data.profile} />{'\n'}
                 {`owned by ${data.profile.owner}\n`}
+                <Link href={`/inbox/by-profile/${data.profile.profileId}`}>view inbox</Link>{'\n'}
                 {'\n'}
 
                 <b>{data.following.length} following</b>{'\n'}

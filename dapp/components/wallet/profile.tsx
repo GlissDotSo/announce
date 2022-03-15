@@ -155,7 +155,7 @@ const LensProfileContextSwitcher = ({ address }: any) => {
                 selectProfile(query.data.profiles[0])
             }
         }
-    }, [isSuccess, query.data])
+    }, [isSuccess, query.data, store])
 
     if(isLoading || isError) return <></>
     if (!isSuccess) return <></>

@@ -14,7 +14,7 @@ async function getInbox(profileId: string) {
         body: JSON.stringify({
             query: `
                 {
-                    profiles(where: { id: "${profileId}" }) {
+                    profiles(where: { handle: "${profileId}" }) {
                         handle,
                         profileId,
                         owner,
@@ -35,10 +35,14 @@ async function getInbox(profileId: string) {
     })
         .then(x => x.json())
 
-    
-    const following = res1.data.profiles[0].following
+    const profile = res1.data.profiles[0]
+    const following = profile.following
     if(following.length === 0) {
-        return []
+        // TODO: BAD BAD BAD REFACTOR. Return only one place.
+        return {
+            profile,
+            posts: []
+        }
     }
     const followingProfileIds = following.map((edge: any) => edge.to.id)
 
@@ -109,7 +113,10 @@ async function getInbox(profileId: string) {
     console.log(res3.data.feedPubs)
 
     const posts = res3.data.feedPubs
-    return posts
+    return {
+        profile,
+        posts
+    }
 }
 
 
@@ -126,6 +133,8 @@ const ProfileHandleInlineLink = ({ profile }: any) => {
 import spotifyStyleTime from 'spotify-style-times'
 import { StoreContext } from '../../../providers/wagmi'
 import { useContext, useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/router'
+import { BaseLayout } from '../../layouts'
 
 
 const Item = ({ id, feed, author, pub }: any) => {
@@ -144,7 +153,7 @@ const Item = ({ id, feed, author, pub }: any) => {
         if (!pub.content && !content) {
             loadFromIpfs();
         }
-    }, [])
+    }, [content, pub.content, loadFromIpfs])
 
     return <pre key={id}>
         <b>
@@ -218,10 +227,16 @@ const AnimatedLoadingEllipsis = () => {
     </>
 }
 
-const ViewInboxPage = () => {
+export const ViewInbox = ({ profileId }: { profileId: string }) => {
+    console.log(profileId)
     // Fetch from subgraph.
-    const store = useContext(StoreContext)
-    const { isLoading, error, data } = useQuery(['getInbox', store.profile?.profileId], () => getInbox(store.profile?.profileId))
+    const { isLoading, error, data } = useQuery(
+        `getInbox-${profileId}`, 
+        () => getInbox(profileId),
+        {
+            enabled: !!profileId
+        }
+    )
 
     return <>
         {/* Show all items in a user's inbox */}
@@ -230,7 +245,13 @@ const ViewInboxPage = () => {
             {'\n'}
             {isLoading && 'Loading inbox ' }
             { isLoading && <AnimatedLoadingEllipsis /> }
+            {data && data.profile && <strong>{`${data.profile.handle}'s inbox\n`}</strong>}
         </pre>
+        
+        {
+            data && !data.posts.length && <pre>Nothing to see here.</pre>
+        }
+
         {
             // Show posts.
             // data && data.map(({ pubId, timestamp, profileId, contentURI }: any) => <>
@@ -240,9 +261,22 @@ const ViewInboxPage = () => {
             // </>)
 
             // Show feedPubs.
-            data && data.map((x: any, i: number) => <Item key={i} {...x}/>)
+            data && data.posts.map((x: any, i: number) => <Item key={i} {...x}/>)
         }
     </>
+}
+
+
+function ViewInboxPage(args: any) {
+    const router = useRouter()
+    const { id } = router.query
+    if (!id) {
+        return <></>
+    }
+
+    return <BaseLayout>
+        <ViewInbox profileId={id as string} />
+    </BaseLayout>
 }
 
 export default ViewInboxPage
