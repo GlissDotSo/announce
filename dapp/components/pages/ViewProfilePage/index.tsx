@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { useQuery } from "react-query"
 import { ANNONCE_SUBGRAPH_URL } from "../../../config"
 import { ProfileHandleInlineLink } from "../../utils"
+import Link from "next/link"
 
 async function getProfiles(ids: string[]) {
     const res2 = await fetch(`${ANNONCE_SUBGRAPH_URL}`, {
@@ -18,6 +19,12 @@ async function getProfiles(ids: string[]) {
                     profiles( where: { profileId_in: ${JSON.stringify(ids)} } ) {
                         handle,
                         profileId
+                    },
+                    feeds(where:{ profile_in: ${JSON.stringify(ids)} }) {
+                        feedId,
+                        profile {
+                            id
+                        }
                     }
                 }
             `
@@ -26,7 +33,20 @@ async function getProfiles(ids: string[]) {
         .then(x => x.json())
 
 
-    return res2.data.profiles
+    const data = res2.data
+
+    if(!res2.data.profiles) return []
+
+    // TODO: improve the schema here.
+    let profiles: any = {}
+    data.profiles.forEach((profile: any) => {
+        profiles[profile.profileId] = profile;
+    })
+    data.feeds.forEach((feed: any) => {
+        profiles[feed.profile.id].feedId = feed.feedId;
+    })
+
+    return Object.values(profiles)
 }
 
 async function getProfile(handle: string) {
@@ -76,17 +96,12 @@ async function getProfile(handle: string) {
 
     if (following.length > 0) {
         const followingProfileIds = following.map((edge: any) => edge.to.id)
-        followingProfiles = await getProfiles(followingProfileIds) 
+        followingProfiles = await getProfiles(followingProfileIds)
     }
-    // FIXME: in the subgraph
-    // Error: `edge.to` is undefined.
     if(followers.length) {
         const followersProfileIds = followers.map((edge: any) => edge.from.id)
         followersProfiles = await getProfiles(followersProfileIds) 
     }
-
-
-    
 
     const data = {
         profile: profile,
@@ -95,6 +110,13 @@ async function getProfile(handle: string) {
     }
 
     return data;
+}
+
+export const SmartInlineProfileHandleLink = ({ profile }: any) => {
+    if(profile.feedId) {
+        return <Link href={`/publications/${profile.feedId}`}>{profile.handle}</Link>
+    }
+    return <Link href={`/profiles/${profile.handle}`}>{profile.handle}</Link>
 }
 
 const ViewProfile = ({ id }: { id: string }) => {
@@ -112,7 +134,7 @@ const ViewProfile = ({ id }: { id: string }) => {
                 {'\n'}
 
                 <b>{data.following.length} following</b>{'\n'}
-                {data.following.map((profile: any) => <ProfileHandleInlineLink key={profile.profileId} profile={profile} />).map((x: JSX.Element) => <>{x}{`\n`}</>)}
+                {data.following.map((profile: any) => <SmartInlineProfileHandleLink key={profile.profileId} profile={profile} />).map((x: JSX.Element) => <>{x}{`\n`}</>)}
                 
                 {'\n'}
                 <b>{data.followers.length} followers</b>{'\n'}
