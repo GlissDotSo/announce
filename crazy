@@ -1,0 +1,192 @@
+# anno: programmable social media
+
+
+Fixes:
+* allow anyone to create profiles (verify with ENS service)
+* better createProfile flow - select handle, create.
+* fix inbox query
+* automatic switch to polygon mumbai
+
+Other:
+* fix blockNumber in deploy script
+
+
+
+
+
+
+
+Setup your own geth-compatible chain.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+What is fucking cool?
+- issuing your own token.
+- NFT's as cryptomedia objects.
+
+
+
+I'd love to curate different objects into a gallery
+this requires a gallery format
+but I'd also just like to design social tools for crypto e.g.
+    a group that converts culture into NFT's
+        screenshots
+            bitcoin whitepaper
+            etc.
+        vote to mint
+        mint
+        sell
+
+
+
+
+the thing is
+the blockchain has enough space
+we can subsidize the costs of infra
+it's just that the indexer will not keep up with these demands
+so we need to write our own indexing infra
+
+
+
+
+
+Shitposting group.
+Every post is a collectible meme NFT for 24h. 
+Group is a DAO, every member has voting shares. How to accrue? 
+    User collects $SHIT every time other group members "collect" their post.
+What do $SHIT tokens govern?
+    Group name.
+    Add/remove member.
+    Add/remove membership based on NFT.
+        e.g. $POOLSUITE gives you access to group.
+    Group can issue its own NFT's under its brand.
+        e.g. collabs with other groups
+
+
+
+
+
+Group
+Post
+    Comments
+    [collect]
+Poll
+    Comments
+    Vote - based on follow NFT of group.
+    Deadline/execute.
+
+
+Feeds within group
+Membership of stream based on group membership token
+But governance can authorise other tokens too
+
+
+
+
+
+
+
+
+
+
+
+What use are follow NFT's? 
+
+
+
+
+
+Cryptomedia needs to stream itself.
+
+
+
+What needs UX?
+ * snapshot polls.
+
+
+
+Crazy features:
+
+ * post NFT
+
+ * snapshot polls in-app.
+
+ * post data that uses on-chain call. e.g.
+    ```eth
+    makerdao_contract 
+        address: 0x1123213123
+        abi:
+         - stabilityFee(address asset)
+    
+    timestamp = 123123123
+    asset = 0x12312312
+    stability_fee = makerdao_contract.stabilityFee(asset, { timestamp })
+    return stability_fee
+    ```
+
+    replace truth!!
+
+
+ * feeds that are token-gated.
+    custom author module.
+        isAuthor = holds token
+        show the code on the homepage
+
+
+ * revenue models for feeds
+    * collect post for fee - on-chain svg of post.
+
+
+ * streaming payments
+
+
+ * tokenised engagement into $TOKEN.
+   
+
+
+ * feed for the hyper protocol
+Can we somehow build hyper but using text-only? 
+
+ 
+    
+
+
+Basic features:
+
+ * comments
+ * mirrors
+ * 
+
+
+
+
+Deployment
+    
+    instances: Instance[]
+    types: Type[]
+
+Type
+    id: string
+    abi: ABIItem[]
+
+Instance
+    type: Type
+    deployTx: DeployTransaction
+
+DeployTransaction
+    blockNumber: string
+    tx: string
+    bytecode: string
+    constructorArgs: any[]
