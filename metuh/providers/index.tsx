@@ -26,13 +26,13 @@ const connectors = ({ chainId }: { chainId?: number | undefined }) => {
             chains: supportedChains,
             options: { shimDisconnect: true },
         }),
-        new WalletConnectConnector({
-            chains: supportedChains,
-            options: {
-                infuraId,
-                qrcode: true,
-            },
-        }),
+        // new WalletConnectConnector({
+        //     chains: supportedChains,
+        //     options: {
+        //         infuraId,
+        //         qrcode: true,
+        //     },
+        // }),
     ]
 }
 

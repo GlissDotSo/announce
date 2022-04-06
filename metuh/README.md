@@ -39,3 +39,15 @@ Contract:
             set msg.sender to recovered address
             execute tx
 ```
+
+How does funding work?
+
+```
+Each account has balance
+
+
+Each tx burns gas
+Users get 0.1 MATIC to start with
+Must approve to top up gas token for wallet
+Whenever user's balance is low, their 
+```

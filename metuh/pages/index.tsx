@@ -15,45 +15,32 @@ import { ethers } from 'ethers'
 
 
 
-// All properties on a domain are optional
-const domain = {
-    name: 'Ether Mail',
-    version: '1',
-    chainId: 1,
-    verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
-}
-
 // The named list of all type definitions
 const types = {
     DispatcherAuth: [
         { name: 'wallet', type: 'address' },
-        { name: 'sessionPubkey', type: 'bytes32' }
+        { name: 'sessionPubkey', type: 'bytes' }
     ],
 }
 
 
 export const SignMessage = () => {
-    // const previousMessage = useRef<string>()
-    // const [message, setMessage] = useState('')
     const [{ data, error, loading }, signTypedData] = useSignTypedData()
-
-    // const recoveredAddress = React.useMemo(() => {
-    //     if (!data || !previousMessage.current) return undefined
-    //     return verifyMessage(previousMessage.current, data)
-    // }, [data, previousMessage])
-
-    // return (
-        
-    // )
-
     const [{ data: accountData }, disconnect] = useAccount({
         fetchEns: true,
     })
 
-    const [keypair, setKeypair] = useState(null)
+    const [keypair, setKeypair] = useState<ethers.Wallet>(null)
     
     async function performAuth() {
         const wallet = ethers.Wallet.createRandom()
+
+        const domain = {
+            name: 'Ether Mail',
+            version: '1',
+            chainId: await accountData.connector.getChainId(),
+            verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+        }
 
         const msg = {
             wallet: accountData.address,
@@ -62,20 +49,27 @@ export const SignMessage = () => {
 
         console.debug(msg)
 
-        await signTypedData({
+        const { data, error } = await signTypedData({
             domain,
             types,
             value: msg
         })
+        
+        if(error) throw error
+
+        setKeypair(wallet)
+        console.log(data)
     }
+
+    console.log(loading, error)
 
     useEffect(() => {
         if (accountData && keypair == null) {
             if (!loading && !error) performAuth()
         }
-    }, [accountData, keypair])
+    }, [accountData, keypair, loading, error])
 
-    return <></>
+    return <>h</>
 }
 
 
