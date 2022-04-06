@@ -7,9 +7,7 @@ how this works
 ```
 unlock the web3 provider
 sign a piece of data
-    Sign in with ethereum = I am this addy.  also here's a keypair client-side I just madeup. and timestamp/expiry.
-send to server
-verifies and links the two
+    Sign in with ethereum = I am this addy.  also here's a pubkey client-side I just madeup. and timestamp/expiry.
 
 instantiate the ethers MetaTxProvider
 provider hooks sendTx
@@ -19,7 +17,7 @@ provider hooks sendTx
 API endpoint
     receives tx
     recovers pubkey from sig/msg
-    matches pubkey to 
+    verifies sig is signed by pubkey
     executes meta-tx on the contract
         contract.execute(metatx)
             decode metatx
